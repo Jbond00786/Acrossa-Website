@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://acrossaops.com/sitemap.xml

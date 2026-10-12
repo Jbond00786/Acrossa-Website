@@ -1,0 +1,7 @@
+/* FORCE THE BACKGROUND COLOR (Kills Vite's default Dark Mode) */
+body {
+background-color: #FFF2DF !important;
+color: #3E2522 !important;
+margin: 0;
+padding: 0;
+}
