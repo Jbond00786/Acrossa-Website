@@ -1,11 +1,10 @@
-import React, { useEffect, useRef, useState, useMemo } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import { 
   ArrowRight, CalendarDays, Layers, Activity, Menu, X, 
   CheckCircle2, Shield, MessageSquare, ChevronRight, 
   AlertCircle, Users, FileText, Target, ShieldCheck, 
   Clock, CheckSquare, Search, ChevronDown, Truck, Headset, Wrench,
-  Mail, Sliders, Lock, Zap, HelpCircle, ArrowUpRight
-} from 'lucide-react';
+  Mail, Sliders, HelpCircle, } from 'lucide-react';
 import * as THREE from 'three';
 
 const GlobalStyles = () => (
@@ -1143,8 +1142,25 @@ const CoverageCalculator = ({ setView }) => {
 };
 
 const LiveDashboard = () => {
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'RESOLVED': return 'text-emerald-400';
+      case 'ESCALATED': return 'text-amber-400';
+      case 'LOGGED': return 'text-blue-400';
+      case 'DISPATCHED': return 'text-purple-400';
+      case 'CRITICAL': return 'text-red-400';
+      default: return 'text-slate-400';
+    }
+  };
+
+
+
   const [stats, setStats] = useState({ shifts: 46, exceptions: 3, rate: 98 });
-  const [feedData, setFeedData] = useState([]);
+  const [feedData, setFeedData] = useState([
+    { id: 'init-1', time: '05:38', status: 'RESOLVED', note: 'Field Tech arrived at Site B. Client notified via ServiceTitan. Coverage confirmed.' },
+    { id: 'init-2', time: '05:32', status: 'LOGGED', note: 'Routine DAR submitted for North Logistics Hub. Checkpoints verified on TrackTik.' },
+    { id: 'init-3', time: '05:25', status: 'ESCALATED', note: 'Missed geofence check-in at Warehouse 4. Supervisor notified and confirmed on site.' }
+  ].map(item => ({ ...item, color: getStatusColor(item.status) })));
 
   const multiIndustryLogPool = useMemo(() => [
     { status: 'RESOLVED', note: 'Truck #104 gate arrival logged at Chicago terminal. Seal number confirmed.' },
@@ -1161,25 +1177,11 @@ const LiveDashboard = () => {
     { status: 'LOGGED', note: 'Inbound emergency line answered in 14s. Service ticket #1093 assigned to field lead.' }
   ], []);
 
-  const getStatusColor = (status) => {
-    switch(status) {
-      case 'RESOLVED': return "text-emerald-400 bg-emerald-400/10 border-emerald-400/25";
-      case 'LOGGED': return "text-[#D3A376] bg-[#D3A376]/10 border-[#D3A376]/25";
-      case 'ESCALATED': return "text-rose-400 bg-rose-400/10 border-rose-400/25";
-      case 'REFERRED': return "text-amber-400 bg-amber-400/10 border-amber-400/25";
-      case 'SEEN': return "text-[#FFE0B2] bg-[#FFE0B2]/10 border-[#FFE0B2]/25";
-      default: return "text-[#FFF2DF] bg-[#FFF2DF]/10 border-[#FFF2DF]/25";
-    }
-  };
 
   useEffect(() => {
-    const initialLogs = [
-      { id: 'init-1', time: '05:38', status: 'RESOLVED', note: 'Field Tech arrived at Site B. Client notified via ServiceTitan. Coverage confirmed.' },
-      { id: 'init-2', time: '05:32', status: 'LOGGED', note: 'Routine DAR submitted for North Logistics Hub. Checkpoints verified on TrackTik.' },
-      { id: 'init-3', time: '05:25', status: 'ESCALATED', note: 'Missed geofence check-in at Warehouse 4. Supervisor notified and confirmed on site.' }
-    ].map(item => ({ ...item, color: getStatusColor(item.status) }));
 
-    setFeedData(initialLogs);
+
+
 
     let logIndex = 0;
     const tickerInterval = setInterval(() => {
@@ -1957,7 +1959,7 @@ const AboutView = ({ setView }) => (
   </div>
 );
 
-const ContactView = ({ setView }) => {
+const ContactView = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -1985,7 +1987,7 @@ const ContactView = ({ setView }) => {
         setIsSubmitting(false);
         setErrorMessage(data.message || "Failed to submit inquiry. Please email us directly at contact@acrossaops.com.");
       }
-    } catch (error) {
+    } catch {
       setIsSubmitting(false);
       setErrorMessage("Network error connecting to form service. Please email contact@acrossaops.com.");
     }
@@ -2167,6 +2169,18 @@ const PolicyModal = ({ title, content, onClose }) => (
   </div>
 );
 
+  const NavLink = ({ label, target, view, navigate, navTextColor }) => (
+    <button
+      onClick={() => navigate(target)}
+      className={`transition-colors duration-300 font-bold tracking-wide flex items-center gap-1 text-xs md:text-sm uppercase
+        ${view === target
+           ? 'text-[#D3A376]'
+           : `${navTextColor} hover:text-[#D3A376]`}`}
+    >
+      {label} {view === target && <ChevronRight size={14} className="mt-0.5" />}
+    </button>
+  );
+
 export default function App() {
   const [view, setView] = useState(() => {
     if (typeof window !== 'undefined' && window.location.hash) {
@@ -2218,17 +2232,7 @@ export default function App() {
   const isDarkText = !isDarkHero && !isScrolled;
   const navTextColor = isDarkText ? 'text-[#3E2522]' : 'text-[#FFF2DF]';
 
-  const NavLink = ({ label, target }) => (
-    <button 
-      onClick={() => navigate(target)} 
-      className={`transition-colors duration-300 font-bold tracking-wide flex items-center gap-1 text-xs md:text-sm uppercase
-        ${view === target 
-           ? 'text-[#D3A376]' 
-           : `${navTextColor} hover:text-[#D3A376]`}`}
-    >
-      {label} {view === target && <ChevronRight size={14} className="mt-0.5" />}
-    </button>
-  );
+
 
   return (
     <div className="min-h-screen bg-[#FFF2DF] text-[#3E2522] font-sans selection:bg-[#D3A376] selection:text-[#3E2522] flex flex-col">
@@ -2240,10 +2244,10 @@ export default function App() {
         </div>
         
         <div className="hidden md:flex gap-7 items-center">
-          <NavLink label="Home" target="home" />
-          <NavLink label="Services" target="services" />
-          <NavLink label="How We Work" target="how-we-work" />
-          <NavLink label="About" target="about" />
+          <NavLink label="Home" target="home" view={view} navigate={navigate} navTextColor={navTextColor} />
+          <NavLink label="Services" target="services" view={view} navigate={navigate} navTextColor={navTextColor} />
+          <NavLink label="How We Work" target="how-we-work" view={view} navigate={navigate} navTextColor={navTextColor} />
+          <NavLink label="About" target="about" view={view} navigate={navigate} navTextColor={navTextColor} />
           <button 
             onClick={() => navigate('contact')} 
             className={`ml-2 px-5 py-2.5 rounded-lg transition-all duration-300 uppercase tracking-widest text-xs font-bold shadow-md ${
