@@ -1,3 +1,6 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 /* FORCE THE BACKGROUND COLOR (Kills Vite's default Dark Mode) */
 body {
 background-color: #FFF2DF !important;
