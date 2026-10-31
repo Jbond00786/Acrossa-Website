@@ -411,14 +411,18 @@ const PageHeader = ({ eyebrow, title, subtitle }) => (
 
 const AnimatedProcess = () => {
   const [progress, setProgress] = useState(0);
+  const containerRef = useRef(null);
 
   useEffect(() => {
     let animationFrame;
     const duration = 7000; 
     const fillTime = 5000; 
     let startTime = null;
+    let isIntersecting = false;
 
     const animate = (timestamp) => {
+      if (!isIntersecting) return;
+
       if (!startTime) startTime = timestamp;
       const elapsed = (timestamp - startTime) % duration;
 
@@ -432,8 +436,30 @@ const AnimatedProcess = () => {
       animationFrame = requestAnimationFrame(animate);
     };
 
-    animationFrame = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(animationFrame);
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        isIntersecting = entry.isIntersecting;
+        if (isIntersecting) {
+          startTime = null; // Reset start time when it comes into view
+          animationFrame = requestAnimationFrame(animate);
+        } else {
+          if (animationFrame) {
+            cancelAnimationFrame(animationFrame);
+          }
+        }
+      });
+    }, { threshold: 0 });
+
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+
+    return () => {
+      if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+      }
+      observer.disconnect();
+    };
   }, []);
 
   const steps = [
@@ -444,7 +470,7 @@ const AnimatedProcess = () => {
   ];
 
   return (
-    <div className="relative flex flex-col md:flex-row w-full gap-12 md:gap-0 mt-8 max-w-6xl mx-auto">
+    <div ref={containerRef} className="relative flex flex-col md:flex-row w-full gap-12 md:gap-0 mt-8 max-w-6xl mx-auto">
       <div className="hidden md:block absolute top-[28px] left-[12.5%] right-[12.5%] h-[3px] z-0">
         <div className="w-full h-full bg-[#8C6E63]/20 rounded-full"></div>
         <div 
