@@ -4,7 +4,7 @@ import {
   CheckCircle2, Shield, MessageSquare, ChevronRight, 
   AlertCircle, Users, FileText, Target, ShieldCheck, 
   Clock, CheckSquare, Search, ChevronDown, Truck, Headset, Wrench,
-  Mail, Sliders, Lock, Zap, HelpCircle, ArrowUpRight
+  Mail, Sliders, HelpCircle
 } from 'lucide-react';
 import * as THREE from 'three';
 
