@@ -1968,7 +1968,7 @@ const ContactView = ({ setView }) => {
     setErrorMessage('');
     
     const formData = new FormData(e.target);
-    const web3FormsKey = import.meta.env?.VITE_WEB3FORMS_KEY || "f02e1205-164f-4bd7-af41-abac17113875";
+    const web3FormsKey = import.meta.env?.VITE_WEB3FORMS_KEY;
     formData.append("access_key", web3FormsKey);
     formData.append("subject", "New Inquiry from Acrossa Website");
 
