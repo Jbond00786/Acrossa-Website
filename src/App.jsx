@@ -7,6 +7,7 @@ import {
   Mail, Sliders, Lock, Zap, HelpCircle, ArrowUpRight
 } from 'lucide-react';
 import * as THREE from 'three';
+import { calculateCoverage } from './utils/coverage';
 
 const GlobalStyles = () => (
   <style>{`
@@ -1010,22 +1011,7 @@ const CoverageCalculator = ({ setView }) => {
   const [shiftsPerDay, setShiftsPerDay] = useState(6);
   const [coverageWindow, setCoverageWindow] = useState('24/7');
 
-  const calculation = useMemo(() => {
-    let multiplier = 1;
-    if (coverageWindow === '24/7') multiplier = 3;
-    if (coverageWindow === 'after-hours') multiplier = 1.5;
-    if (coverageWindow === 'business-hours') multiplier = 1;
-
-    const monthlyShifts = shiftsPerDay * 30;
-    const adminHoursSaved = Math.round(monthlyShifts * 0.45 * multiplier);
-    const incidentAuditCapacity = monthlyShifts * 4;
-
-    return {
-      monthlyShifts,
-      adminHoursSaved,
-      incidentAuditCapacity
-    };
-  }, [shiftsPerDay, coverageWindow]);
+  const calculation = useMemo(() => calculateCoverage(shiftsPerDay, coverageWindow), [shiftsPerDay, coverageWindow]);
 
   return (
     <section className="w-full px-6 md:px-12 lg:px-24 py-20 bg-[#FFE0B2]/20 border-t border-[#8C6E63]/10">
