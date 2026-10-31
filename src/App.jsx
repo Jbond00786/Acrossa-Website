@@ -208,9 +208,10 @@ const Hero3D = () => {
 
     const connections = [];
     const maxDistance = 6.8;
+    const nodesLen = nodes.length;
 
-    for (let i = 0; i < nodes.length; i++) {
-      for (let j = i + 1; j < nodes.length; j++) {
+    for (let i = 0; i < nodesLen; i++) {
+      for (let j = i + 1; j < nodesLen; j++) {
         const dist = nodes[i].distanceTo(nodes[j]);
         if (dist < maxDistance) {
           connections.push({ start: nodes[i], end: nodes[j], distance: dist });
