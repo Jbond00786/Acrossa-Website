@@ -1142,7 +1142,7 @@ const CoverageCalculator = ({ setView }) => {
   );
 };
 
-const LiveDashboard = () => {
+const useLiveDashboardData = () => {
   const [stats, setStats] = useState({ shifts: 46, exceptions: 3, rate: 98 });
   const [feedData, setFeedData] = useState([]);
 
@@ -1211,6 +1211,31 @@ const LiveDashboard = () => {
     return () => clearInterval(tickerInterval);
   }, [multiIndustryLogPool]);
 
+  return { stats, feedData };
+};
+
+const DashboardMetricCard = ({ label, value, valueColorClass }) => (
+  <div className="p-4 bg-[#2A1816]">
+    <span className="block text-[10px] text-[#FFF2DF]/50 font-mono mb-1">{label}</span>
+    <span className={`text-xl font-bold ${valueColorClass}`}>{value}</span>
+  </div>
+);
+
+const DashboardLogItem = ({ item }) => (
+  <div className="animate-new-log flex gap-3 items-start border-b border-[#FFF2DF]/5 pb-2.5">
+    <span className="text-xs font-mono text-[#FFF2DF]/50 mt-0.5 whitespace-nowrap">{item.time}</span>
+    <div>
+      <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded border ${item.color} mb-1 inline-block font-semibold`}>
+        {item.status}
+      </span>
+      <p className="text-xs md:text-sm text-[#FFF2DF]/90 leading-snug font-medium pr-1">{item.note}</p>
+    </div>
+  </div>
+);
+
+const LiveDashboard = () => {
+  const { stats, feedData } = useLiveDashboardData();
+
   return (
     <div style={{ perspective: '1200px' }} className="relative">
       <div 
@@ -1229,18 +1254,9 @@ const LiveDashboard = () => {
         </div>
         
         <div className="grid grid-cols-3 gap-px bg-[#FFF2DF]/5 border-b border-[#FFF2DF]/10">
-          <div className="p-4 bg-[#2A1816]">
-            <span className="block text-[10px] text-[#FFF2DF]/50 font-mono mb-1">TOTAL SHIFTS</span>
-            <span className="text-xl font-bold text-[#FFF2DF]">{stats.shifts}</span>
-          </div>
-          <div className="p-4 bg-[#2A1816]">
-            <span className="block text-[10px] text-[#FFF2DF]/50 font-mono mb-1">OPEN EXCEPTIONS</span>
-            <span className="text-xl font-bold text-[#D3A376]">{String(stats.exceptions).padStart(2, '0')}</span>
-          </div>
-          <div className="p-4 bg-[#2A1816]">
-            <span className="block text-[10px] text-[#FFF2DF]/50 font-mono mb-1">SLA COMPLIANCE</span>
-            <span className="text-xl font-bold text-emerald-400">{stats.rate}%</span>
-          </div>
+          <DashboardMetricCard label="TOTAL SHIFTS" value={stats.shifts} valueColorClass="text-[#FFF2DF]" />
+          <DashboardMetricCard label="OPEN EXCEPTIONS" value={String(stats.exceptions).padStart(2, '0')} valueColorClass="text-[#D3A376]" />
+          <DashboardMetricCard label="SLA COMPLIANCE" value={`${stats.rate}%`} valueColorClass="text-emerald-400" />
         </div>
 
         <div className="h-[290px] relative overflow-hidden bg-[#2A1816] px-4 py-2">
@@ -1249,15 +1265,7 @@ const LiveDashboard = () => {
           
           <div className="pt-2 pb-6 flex flex-col gap-2.5">
             {feedData.map((item) => (
-              <div key={item.id} className="animate-new-log flex gap-3 items-start border-b border-[#FFF2DF]/5 pb-2.5">
-                <span className="text-xs font-mono text-[#FFF2DF]/50 mt-0.5 whitespace-nowrap">{item.time}</span>
-                <div>
-                  <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded border ${item.color} mb-1 inline-block font-semibold`}>
-                    {item.status}
-                  </span>
-                  <p className="text-xs md:text-sm text-[#FFF2DF]/90 leading-snug font-medium pr-1">{item.note}</p>
-                </div>
-              </div>
+              <DashboardLogItem key={item.id} item={item} />
             ))}
           </div>
         </div>
