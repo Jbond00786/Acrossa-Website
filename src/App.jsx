@@ -2318,7 +2318,7 @@ export default function App() {
           </div>
         </div>
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-xs opacity-50 font-medium tracking-wide">
-          <p>© {new Date().getFullYear()} Acrossa Operations LLC. acrossaops.com</p>
+          <p>© {new Date().getFullYear()} Acrossa Remote Operations. acrossaops.com</p>
           <div className="flex gap-6 mt-4 md:mt-0">
             <button onClick={() => setActiveModal('privacy')} className="hover:text-[#FFF2DF] transition-colors">Privacy Policy</button>
             <button onClick={() => setActiveModal('terms')} className="hover:text-[#FFF2DF] transition-colors">Terms of Service</button>
@@ -2332,7 +2332,7 @@ export default function App() {
           onClose={() => setActiveModal(null)}
           content={
             <>
-              <p>Acrossa Operations LLC respects your privacy. When you contact us or submit an operations inquiry, we collect company details, contact names, email addresses, and operational descriptions solely to evaluate your service requirements and formulate a tailored Scope of Work.</p>
+              <p>Acrossa Operations respects your privacy. When you contact us or submit an operations inquiry, we collect company details, contact names, email addresses, and operational descriptions solely to evaluate your service requirements and formulate a tailored Scope of Work.</p>
               <p>We do not sell, rent, or distribute client contact data to third parties. All operational records, shift data, and platform access credentials shared during trial or active phases are governed by mutual Non-Disclosure Agreements (NDAs).</p>
             </>
           }
