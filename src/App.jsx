@@ -7,6 +7,7 @@ import {
   Mail, Sliders, Lock, Zap, HelpCircle, ArrowUpRight
 } from 'lucide-react';
 import * as THREE from 'three';
+import { calculateCoverage } from './utils/coverage';
 
 const GlobalStyles = () => (
   <style>{`
@@ -1010,22 +1011,7 @@ const CoverageCalculator = ({ setView }) => {
   const [shiftsPerDay, setShiftsPerDay] = useState(6);
   const [coverageWindow, setCoverageWindow] = useState('24/7');
 
-  const calculation = useMemo(() => {
-    let multiplier = 1;
-    if (coverageWindow === '24/7') multiplier = 3;
-    if (coverageWindow === 'after-hours') multiplier = 1.5;
-    if (coverageWindow === 'business-hours') multiplier = 1;
-
-    const monthlyShifts = shiftsPerDay * 30;
-    const adminHoursSaved = Math.round(monthlyShifts * 0.45 * multiplier);
-    const incidentAuditCapacity = monthlyShifts * 4;
-
-    return {
-      monthlyShifts,
-      adminHoursSaved,
-      incidentAuditCapacity
-    };
-  }, [shiftsPerDay, coverageWindow]);
+  const calculation = useMemo(() => calculateCoverage(shiftsPerDay, coverageWindow), [shiftsPerDay, coverageWindow]);
 
   return (
     <section className="w-full px-6 md:px-12 lg:px-24 py-20 bg-[#FFE0B2]/20 border-t border-[#8C6E63]/10">
@@ -1144,7 +1130,25 @@ const CoverageCalculator = ({ setView }) => {
 
 const LiveDashboard = () => {
   const [stats, setStats] = useState({ shifts: 46, exceptions: 3, rate: 98 });
-  const [feedData, setFeedData] = useState([]);
+
+  const getStatusColor = (status) => {
+    switch(status) {
+      case 'RESOLVED': return "text-emerald-400 bg-emerald-400/10 border-emerald-400/25";
+      case 'LOGGED': return "text-[#D3A376] bg-[#D3A376]/10 border-[#D3A376]/25";
+      case 'ESCALATED': return "text-rose-400 bg-rose-400/10 border-rose-400/25";
+      case 'REFERRED': return "text-amber-400 bg-amber-400/10 border-amber-400/25";
+      case 'SEEN': return "text-[#FFE0B2] bg-[#FFE0B2]/10 border-[#FFE0B2]/25";
+      default: return "text-[#FFF2DF] bg-[#FFF2DF]/10 border-[#FFF2DF]/25";
+    }
+  };
+
+  const initialLogs = [
+    { id: 'init-1', time: '05:38', status: 'RESOLVED', note: 'Field Tech arrived at Site B. Client notified via ServiceTitan. Coverage confirmed.' },
+    { id: 'init-2', time: '05:32', status: 'LOGGED', note: 'Routine DAR submitted for North Logistics Hub. Checkpoints verified on TrackTik.' },
+    { id: 'init-3', time: '05:25', status: 'ESCALATED', note: 'Missed geofence check-in at Warehouse 4. Supervisor notified and confirmed on site.' }
+  ].map(item => ({ ...item, color: getStatusColor(item.status) }));
+
+  const [feedData, setFeedData] = useState(initialLogs);
 
   const multiIndustryLogPool = useMemo(() => [
     { status: 'RESOLVED', note: 'Truck #104 gate arrival logged at Chicago terminal. Seal number confirmed.' },
@@ -1161,26 +1165,7 @@ const LiveDashboard = () => {
     { status: 'LOGGED', note: 'Inbound emergency line answered in 14s. Service ticket #1093 assigned to field lead.' }
   ], []);
 
-  const getStatusColor = (status) => {
-    switch(status) {
-      case 'RESOLVED': return "text-emerald-400 bg-emerald-400/10 border-emerald-400/25";
-      case 'LOGGED': return "text-[#D3A376] bg-[#D3A376]/10 border-[#D3A376]/25";
-      case 'ESCALATED': return "text-rose-400 bg-rose-400/10 border-rose-400/25";
-      case 'REFERRED': return "text-amber-400 bg-amber-400/10 border-amber-400/25";
-      case 'SEEN': return "text-[#FFE0B2] bg-[#FFE0B2]/10 border-[#FFE0B2]/25";
-      default: return "text-[#FFF2DF] bg-[#FFF2DF]/10 border-[#FFF2DF]/25";
-    }
-  };
-
   useEffect(() => {
-    const initialLogs = [
-      { id: 'init-1', time: '05:38', status: 'RESOLVED', note: 'Field Tech arrived at Site B. Client notified via ServiceTitan. Coverage confirmed.' },
-      { id: 'init-2', time: '05:32', status: 'LOGGED', note: 'Routine DAR submitted for North Logistics Hub. Checkpoints verified on TrackTik.' },
-      { id: 'init-3', time: '05:25', status: 'ESCALATED', note: 'Missed geofence check-in at Warehouse 4. Supervisor notified and confirmed on site.' }
-    ].map(item => ({ ...item, color: getStatusColor(item.status) }));
-
-    setFeedData(initialLogs);
-
     let logIndex = 0;
     const tickerInterval = setInterval(() => {
       const logTemplate = multiIndustryLogPool[logIndex % multiIndustryLogPool.length];
@@ -1957,7 +1942,7 @@ const AboutView = ({ setView }) => (
   </div>
 );
 
-const ContactView = ({ setView }) => {
+const ContactView = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
