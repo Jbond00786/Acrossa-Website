@@ -1,7 +1,154 @@
-/* FORCE THE BACKGROUND COLOR (Kills Vite's default Dark Mode) */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Adcure';
+  src: url('/fonts/adcure.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@keyframes slideDownFade {
+  0% {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.animate-new-log {
+  animation: slideDownFade 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes radarSweep {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+.animate-radar {
+  animation: radarSweep 8s linear infinite;
+}
+
 body {
-background-color: #FFF2DF !important;
-color: #3E2522 !important;
-margin: 0;
-padding: 0;
+  background: #fff2df;
+  color: #3e2522;
+  margin: 0;
+}
+
+:root {
+  color-scheme: light;
+}
+[id] {
+  scroll-margin-top: 110px;
+}
+:focus-visible {
+  outline: 3px solid #18705a;
+  outline-offset: 4px;
+}
+.skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 100;
+  transform: translateY(-160%);
+  background: #fff2df;
+  color: #3e2522;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-weight: 700;
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+.hero-static {
+  background:
+    radial-gradient(ellipse at 85% 45%, #d3a37630, transparent 50%),
+    radial-gradient(ellipse at 60% 85%, #788b7b24, transparent 45%);
+}
+.hero-static::after {
+  content: '';
+  position: absolute;
+  right: 10%;
+  top: 25%;
+  width: 30%;
+  aspect-ratio: 1;
+  border: 1px solid #d3a37630;
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 50px #d3a37608,
+    0 0 0 100px #d3a37605;
+}
+.whatsapp-icon::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border: 1px solid #047857;
+  border-radius: 50%;
+  animation: whatsapp-ring 3s ease-out infinite;
+  pointer-events: none;
+}
+.whatsapp-link:hover .whatsapp-icon {
+  transform: translateY(-2px);
+}
+.whatsapp-icon {
+  transition: transform 180ms ease;
+}
+@keyframes whatsapp-ring {
+  0%,
+  100% {
+    opacity: 0.15;
+    transform: scale(1);
+  }
+  45% {
+    opacity: 0.55;
+    transform: scale(1.12);
+  }
+}
+[data-process-fill='horizontal'] {
+  transform-origin: left;
+  animation: process-x 7s ease-in-out infinite;
+}
+[data-process-fill='vertical'] {
+  transform-origin: top;
+  animation: process-y 7s ease-in-out infinite;
+}
+@keyframes process-x {
+  0% {
+    transform: scaleX(0);
+  }
+  72%,
+  94% {
+    transform: scaleX(1);
+  }
+  100% {
+    transform: scaleX(0);
+  }
+}
+@keyframes process-y {
+  0% {
+    transform: scaleY(0);
+  }
+  72%,
+  94% {
+    transform: scaleY(1);
+  }
+  100% {
+    transform: scaleY(0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
 }
