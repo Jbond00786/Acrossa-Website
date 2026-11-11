@@ -14,6 +14,8 @@ Branch: `dev/prerender-seo-performance`.
 
 Remote IT Support covers approved troubleshooting, ticket records, authorized access help, and specialist escalation. Call Center & Customer Care covers phone, email, chat, CRM records, and customer follow-up. Obsolete trades examples and the calculator's nonfunctional sector selector were removed. Source import-graph inspection found no orphaned components; production source contains no console logging.
 
+CI uses Node 24-compatible GitHub Actions, records the pinned esbuild install-script decision, and retains a Playwright HTML report on success as well as failure.
+
 ## Delivered
 
 - Five static HTML pages with client-side React navigation and route-specific titles, descriptions, canonicals, Open Graph, Twitter cards, and JSON-LD before JavaScript executes.
@@ -50,7 +52,7 @@ Initial application JavaScript is approximately 57% smaller uncompressed and 51%
 
 ## Outstanding verification before merging
 
-Local Chromium is restricted by the execution environment. The first revision passed all 8 Chromium tests in GitHub Actions. This update extends the browser suite to 13 tests, including all four service inquiry flows and deferred desktop/mobile assets. The latest PR checks are authoritative for its result. The Vercel preview requires authentication; deployed edge behavior, personal visual review, mailbox delivery, and Lighthouse remain separate checks.
+Local Chromium is restricted by the execution environment. The first revision passed all 8 Chromium tests in GitHub Actions. This update extends the browser suite to 13 tests, including all four service inquiry flows and deferred desktop/mobile assets. All 13 browser tests passed for the service-catalog revision. The latest PR checks are authoritative for subsequent CI maintenance. The Vercel preview requires authentication; deployed edge behavior, personal visual review, mailbox delivery, and Lighthouse remain separate checks.
 
 The supplied Playwright tests run in GitHub Actions. Review the latest results and the Vercel preview before merging. Specifically confirm:
 
