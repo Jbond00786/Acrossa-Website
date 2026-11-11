@@ -1,13 +1,6 @@
-import {
-  CalendarDays,
-  Layers,
-  Activity,
-  ShieldCheck,
-  CheckSquare,
-  Truck,
-  Headset,
-  Wrench,
-} from 'lucide-react';
+import { site, services } from '../config/site.js';
+import ServiceIcon from '../components/visuals/ServiceIcon.jsx';
+import { CalendarDays, Layers, Activity, CheckSquare } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import RevealOnScroll from '../components/visuals/RevealOnScroll.jsx';
 import PageHeader from '../components/layout/PageHeader.jsx';
@@ -21,7 +14,7 @@ const ServicesView = () => (
     <PageHeader
       eyebrow="Our Services"
       title="Structured Support for Daily Workflows."
-      subtitle="Our 45+ member team supports security dispatching, truck logistics coordination, field service operations, and customer care inside your existing platforms. We provide operational support, not HR onboarding services."
+      subtitle={`${site.description} We do not provide HR onboarding services.`}
     />
 
     <div className="max-w-6xl mx-auto px-6 md:px-12 lg:px-24 pb-24 space-y-24">
@@ -83,9 +76,9 @@ const ServicesView = () => (
         >
           <h3 className="text-xl font-bold text-[#3E2522] mb-3">Clear Responsibility Boundaries</h3>
           <p className="text-[#3E2522]/80 text-sm leading-relaxed mb-4">
-            Acrossa operates strictly on your designated escalation protocols and roster rules. We
-            do not make hiring or disciplinary decisions; final operational authority remains 100%
-            in your hands.
+            {site.name} operates strictly on your designated escalation protocols and roster rules.
+            We do not make hiring or disciplinary decisions; final operational authority remains
+            100% in your hands.
           </p>
           <span className="text-xs font-mono text-[#8C6E63] font-bold uppercase tracking-wider block">
             • Strict SOP Compliance • Zero Management Drift
@@ -100,7 +93,7 @@ const ServicesView = () => (
             direction="left"
             className="text-3xl font-bold mb-3 text-[#3E2522] flex items-center gap-3"
           >
-            <Activity className="text-[#D3A376]" size={32} /> Multi-Sector Dispatch & Communications
+            <Activity className="text-[#D3A376]" size={32} /> Four Core Services
           </RevealOnScroll>
           <RevealOnScroll
             as="p"
@@ -108,140 +101,36 @@ const ServicesView = () => (
             delay={50}
             className="text-[#3E2522]/80 leading-relaxed"
           >
-            Our remote operators are specialized across four core North American field service
-            industries:
+            Choose the support your team needs, delivered inside your existing platforms:
           </RevealOnScroll>
         </div>
 
         <div className="grid grid-cols-1 gap-4">
-          <DispatchAccordion
-            delay={100}
-            sector="Physical Security & Patrols"
-            title="Security Dispatch & Tour Auditing"
-            icon={ShieldCheck}
-            desc={
-              <div className="space-y-3">
-                <p className="font-semibold text-[#3E2522]">
-                  Dedicated remote coordination for physical security companies, mobile patrols, and
-                  executive protection.
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs md:text-sm">
-                  <div className="p-3 bg-[#FFF2DF]/50 rounded-lg border border-[#8C6E63]/10">
-                    <strong>Guard Tour Auditing:</strong> Live verification of RFID / QR checkpoint
-                    scans and geofence perimeter compliance.
-                  </div>
-                  <div className="p-3 bg-[#FFF2DF]/50 rounded-lg border border-[#8C6E63]/10">
-                    <strong>Incident Management:</strong> Instant supervisor escalation for gate
-                    alarms, trespassers, or unverified post departures.
-                  </div>
-                  <div className="p-3 bg-[#FFF2DF]/50 rounded-lg border border-[#8C6E63]/10">
-                    <strong>Daily Activity Reports (DARs):</strong> Compiling and formatting
-                    client-ready DARs with timestamped photos.
-                  </div>
-                  <div className="p-3 bg-[#FFF2DF]/50 rounded-lg border border-[#8C6E63]/10">
-                    <strong>Systems:</strong> Native execution in TrackTik, Silvertrac, Connecteam,
-                    and Quo.
+          {services.map((service, index) => (
+            <DispatchAccordion
+              key={service.id}
+              id={service.id}
+              delay={100 + index * 50}
+              sector={service.sector}
+              title={service.name}
+              icon={<ServiceIcon serviceId={service.id} size={22} />}
+              desc={
+                <div className="space-y-3">
+                  <p className="font-semibold text-[#3E2522]">{service.description}</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs md:text-sm">
+                    {service.features.map((feature) => (
+                      <div
+                        key={feature.title}
+                        className="p-3 bg-[#FFF2DF]/50 rounded-lg border border-[#8C6E63]/10"
+                      >
+                        <strong>{feature.title}:</strong> {feature.description}
+                      </div>
+                    ))}
                   </div>
                 </div>
-              </div>
-            }
-          />
-
-          <DispatchAccordion
-            delay={150}
-            sector="Freight & Logistics"
-            title="Trucking & Route Dispatch Coordination"
-            icon={Truck}
-            desc={
-              <div className="space-y-3">
-                <p className="font-semibold text-[#3E2522]">
-                  Keep trucks loaded and freight moving smoothly with active 24/7 route tracking.
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs md:text-sm">
-                  <div className="p-3 bg-[#FFF2DF]/50 rounded-lg border border-[#8C6E63]/10">
-                    <strong>Check-in Loops:</strong> Scheduled driver touchpoints for pickup
-                    arrival, loading status, and delivery confirmation.
-                  </div>
-                  <div className="p-3 bg-[#FFF2DF]/50 rounded-lg border border-[#8C6E63]/10">
-                    <strong>Detention & Delay Tracking:</strong> Immediate documentation of facility
-                    delays to substantiate detention charges.
-                  </div>
-                  <div className="p-3 bg-[#FFF2DF]/50 rounded-lg border border-[#8C6E63]/10">
-                    <strong>Broker & Customer Comms:</strong> Proactive ETA notifications to
-                    shippers and brokers before delays escalate.
-                  </div>
-                  <div className="p-3 bg-[#FFF2DF]/50 rounded-lg border border-[#8C6E63]/10">
-                    <strong>Systems:</strong> Samsara, Motive, DAT, Truckstop, McLeod, and standard
-                    ELD telematics.
-                  </div>
-                </div>
-              </div>
-            }
-          />
-
-          <DispatchAccordion
-            delay={200}
-            sector="Field Trades & Maintenance"
-            title="Field Service & Technician Dispatch"
-            icon={Wrench}
-            desc={
-              <div className="space-y-3">
-                <p className="font-semibold text-[#3E2522]">
-                  Seamless scheduling and arrival window management for HVAC, electrical, plumbing,
-                  and restoration teams.
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs md:text-sm">
-                  <div className="p-3 bg-[#FFF2DF]/50 rounded-lg border border-[#8C6E63]/10">
-                    <strong>Arrival Window Tracking:</strong> Monitoring job durations and alerting
-                    homeowners/clients before arrival windows slip.
-                  </div>
-                  <div className="p-3 bg-[#FFF2DF]/50 rounded-lg border border-[#8C6E63]/10">
-                    <strong>Emergency Job Triage:</strong> Immediate assignment of urgent service
-                    tickets to the nearest on-call technician.
-                  </div>
-                  <div className="p-3 bg-[#FFF2DF]/50 rounded-lg border border-[#8C6E63]/10">
-                    <strong>Work Order Verification:</strong> Verifying completion notes,
-                    signatures, and material logs before closing out jobs.
-                  </div>
-                  <div className="p-3 bg-[#FFF2DF]/50 rounded-lg border border-[#8C6E63]/10">
-                    <strong>Systems:</strong> ServiceTitan, Jobber, Housecall Pro, and Simpro.
-                  </div>
-                </div>
-              </div>
-            }
-          />
-
-          <DispatchAccordion
-            delay={250}
-            sector="Customer Operations"
-            title="Inbound Customer Support & Tier-1 Answering"
-            icon={Headset}
-            desc={
-              <div className="space-y-3">
-                <p className="font-semibold text-[#3E2522]">
-                  Professional voice and digital reception ensuring zero dropped client inquiries.
-                </p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs md:text-sm">
-                  <div className="p-3 bg-[#FFF2DF]/50 rounded-lg border border-[#8C6E63]/10">
-                    <strong>24/7 Answering Desk:</strong> Professional phone answering adhering to
-                    your specific script and brand tone.
-                  </div>
-                  <div className="p-3 bg-[#FFF2DF]/50 rounded-lg border border-[#8C6E63]/10">
-                    <strong>Emergency Routing:</strong> Instant warm-transfers to on-call managers
-                    for high-priority operational emergencies.
-                  </div>
-                  <div className="p-3 bg-[#FFF2DF]/50 rounded-lg border border-[#8C6E63]/10">
-                    <strong>Ticket Logging:</strong> Comprehensive triage and classification in your
-                    CRM or ticketing platform.
-                  </div>
-                  <div className="p-3 bg-[#FFF2DF]/50 rounded-lg border border-[#8C6E63]/10">
-                    <strong>Systems:</strong> Zendesk, Freshdesk, RingCentral, Dialpad, and
-                    Intercom.
-                  </div>
-                </div>
-              </div>
-            }
-          />
+              }
+            />
+          ))}
         </div>
       </section>
 

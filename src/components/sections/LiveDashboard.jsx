@@ -22,7 +22,7 @@ const initialLogs = [
     id: 'init-1',
     time: '05:38',
     status: 'RESOLVED',
-    note: 'Field Tech arrived at Site B. Client notified via ServiceTitan. Coverage confirmed.',
+    note: 'Email sign-in issue resolved using the client’s approved recovery procedure.',
   },
   {
     id: 'init-2',
@@ -58,7 +58,7 @@ const LiveDashboard = () => {
       },
       {
         status: 'RESOLVED',
-        note: 'HVAC technician dispatch confirmed for Urgent Job #882. Arrival ETA sent to client.',
+        note: 'Software access ticket #882 triaged. User updated and specialist escalation recorded.',
       },
       {
         status: 'REFERRED',
@@ -70,7 +70,7 @@ const LiveDashboard = () => {
       },
       {
         status: 'SEEN',
-        note: 'Plumbing contractor completed work order #412. Photo verification uploaded to Jobber.',
+        note: 'Connectivity ticket #412 reviewed. Troubleshooting notes added to the helpdesk.',
       },
       {
         status: 'RESOLVED',
@@ -90,7 +90,7 @@ const LiveDashboard = () => {
       },
       {
         status: 'LOGGED',
-        note: 'Inbound emergency line answered in 14s. Service ticket #1093 assigned to field lead.',
+        note: 'Inbound emergency line answered in 14s. Customer request #1093 assigned to the account team.',
       },
     ],
     [],

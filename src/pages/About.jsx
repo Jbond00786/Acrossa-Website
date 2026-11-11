@@ -1,3 +1,4 @@
+import { site, serviceList } from '../config/site.js';
 import RevealOnScroll from '../components/visuals/RevealOnScroll.jsx';
 import PageHeader from '../components/layout/PageHeader.jsx';
 import FinalCTA from '../components/sections/FinalCTA.jsx';
@@ -6,9 +7,9 @@ import GlobalHubsSection from '../components/sections/GlobalHubsSection.jsx';
 const AboutView = () => (
   <div className="w-full animate-in fade-in duration-500">
     <PageHeader
-      eyebrow="About Acrossa"
+      eyebrow={`About ${site.name}`}
       title="A Dedicated Remote Operations Partner."
-      subtitle="Founded in 2025, ACROSSA is a 45+ member remote team supporting service businesses across the United States and Canada."
+      subtitle={`Founded in ${site.foundingDate}, ${site.name} is a ${site.teamSize} member team providing ${serviceList} across the US and Canada.`}
     />
 
     <section className="max-w-6xl mx-auto px-6 md:px-12 lg:px-24 pb-20">
@@ -27,11 +28,9 @@ const AboutView = () => (
             delay={100}
             className="text-[#3E2522]/80 leading-relaxed mb-6"
           >
-            Acrossa was founded to help growing service businesses solve a specific problem: scaling
-            field operations without collapsing the back office. We recognized that generic virtual
-            assistants often lack the focus required to handle the rigid scheduling, dispatch
-            coordination, and reporting needed in industries like security, logistics, and field
-            maintenance.
+            {site.name} helps businesses keep daily work moving through {serviceList}. Our team
+            works in your existing systems with clear responsibilities, documented procedures, and
+            regular communication.
           </RevealOnScroll>
           <RevealOnScroll
             as="p"

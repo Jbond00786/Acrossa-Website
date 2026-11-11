@@ -13,7 +13,7 @@ export default function Footer() {
           <div className="md:col-span-2">
             <Link
               to="/"
-              aria-label="ACROSSA home"
+              aria-label={`${site.name} home`}
               className="flex items-center cursor-pointer group mb-4"
             >
               <Logo
@@ -22,9 +22,7 @@ export default function Footer() {
               />
             </Link>
             <p className="text-xs md:text-sm opacity-65 font-medium max-w-sm leading-relaxed">
-              A 45+ member remote team providing security dispatching, truck logistics coordination,
-              field service support, and customer care in your existing platforms across the US and
-              Canada.
+              {site.description}
             </p>
           </div>
           <div>
@@ -49,7 +47,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link to="/about" className="hover:text-[#D3A376] transition-colors">
-                  About Acrossa
+                  About {site.name}
                 </Link>
               </li>
             </ul>
@@ -64,22 +62,13 @@ export default function Footer() {
                   Inquiry Form
                 </Link>
               </li>
-              <li>
-                <a
-                  href="mailto:contact@acrossaops.com"
-                  className="hover:text-[#D3A376] transition-colors"
-                >
-                  contact@acrossaops.com
-                </a>
-              </li>
-              <li>
-                <a
-                  href="mailto:info@acrossaops.com"
-                  className="hover:text-[#D3A376] transition-colors"
-                >
-                  info@acrossaops.com
-                </a>
-              </li>
+              {site.emails.map((email) => (
+                <li key={email}>
+                  <a href={`mailto:${email}`} className="hover:text-[#D3A376] transition-colors">
+                    {email}
+                  </a>
+                </li>
+              ))}
               <li>
                 <a
                   href={site.whatsapp}
@@ -95,7 +84,9 @@ export default function Footer() {
           </div>
         </div>
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-xs opacity-50 font-medium tracking-wide">
-          <p>© 2025–2026 ACROSSA. acrossaops.com</p>
+          <p>
+            © {site.foundingDate}–2026 {site.name}. {new URL(site.url).hostname}
+          </p>
           <div className="flex gap-6 mt-4 md:mt-0">
             <button
               onClick={() => setActiveModal('privacy')}
@@ -120,8 +111,8 @@ export default function Footer() {
           content={
             <>
               <p>
-                ACROSSA respects your privacy. When you contact us or submit an operations inquiry,
-                we collect company details, contact names, email addresses, and operational
+                {site.name} respects your privacy. When you contact us or submit an operations
+                inquiry, we collect company details, contact names, email addresses, and operational
                 descriptions solely to evaluate your service requirements and formulate a tailored
                 Scope of Work.
               </p>
@@ -142,15 +133,15 @@ export default function Footer() {
           content={
             <>
               <p>
-                Acrossa provides remote business operations, scheduling maintenance, and dispatch
-                support acting as an authorized operational contractor within client-designated
-                software tools.
+                {site.name} provides remote business operations, scheduling maintenance, and
+                dispatch support acting as an authorized operational contractor within
+                client-designated software tools.
               </p>
               <p>
-                Acrossa executes tasks based strictly on agreed standard operating procedures (SOPs)
-                and post orders provided by the client. Client management retains full authority for
-                statutory employment decisions, guard licensing, vehicle maintenance, and final
-                disciplinary actions.
+                {site.name} executes tasks based strictly on agreed standard operating procedures
+                (SOPs) and post orders provided by the client. Client management retains full
+                authority for statutory employment decisions, guard licensing, vehicle maintenance,
+                and final disciplinary actions.
               </p>
             </>
           }

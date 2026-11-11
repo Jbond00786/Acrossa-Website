@@ -1,3 +1,4 @@
+import { site, serviceList } from '../config/site.js';
 import { FileText, Target, Search, Mail } from 'lucide-react';
 import RevealOnScroll from '../components/visuals/RevealOnScroll.jsx';
 import PageHeader from '../components/layout/PageHeader.jsx';
@@ -8,9 +9,9 @@ const ContactView = () => {
   return (
     <div className="w-full animate-in fade-in duration-500">
       <PageHeader
-        eyebrow="Contact Acrossa"
+        eyebrow={`Contact ${site.name}`}
         title="Start the Conversation."
-        subtitle="Tell us about your business, the work consuming your time, and the operational support you need."
+        subtitle={`Tell us what you need from ${serviceList}.`}
       />
 
       <section className="max-w-5xl mx-auto px-6 md:px-12 lg:px-24 pb-28 grid grid-cols-1 md:grid-cols-5 gap-12">
@@ -40,18 +41,15 @@ const ContactView = () => {
               <h4 className="font-bold text-[#3E2522] text-xs uppercase tracking-wider mb-2">
                 Direct Inquiries
               </h4>
-              <a
-                href="mailto:contact@acrossaops.com"
-                className="text-[#3E2522] font-semibold text-sm hover:text-[#8C6E63] flex items-center gap-2"
-              >
-                <Mail size={16} /> contact@acrossaops.com
-              </a>
-              <a
-                href="mailto:info@acrossaops.com"
-                className="mt-3 flex items-center gap-2 text-sm font-semibold text-[#3E2522]"
-              >
-                <Mail size={16} /> info@acrossaops.com
-              </a>
+              {site.emails.map((email) => (
+                <a
+                  key={email}
+                  href={`mailto:${email}`}
+                  className="mt-3 flex items-center gap-2 text-sm font-semibold text-[#3E2522]"
+                >
+                  <Mail size={16} /> {email}
+                </a>
+              ))}
               <WhatsAppLink />
               <p className="text-xs text-[#3E2522]/60 mt-2">
                 Service coverage: United States & Canada

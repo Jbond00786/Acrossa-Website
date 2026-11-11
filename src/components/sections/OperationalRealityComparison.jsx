@@ -1,3 +1,4 @@
+import { site } from '../../config/site.js';
 import { X, CheckCircle2 } from 'lucide-react';
 
 const OperationalRealityComparison = () => {
@@ -18,7 +19,6 @@ const OperationalRealityComparison = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Without Acrossa */}
           <div className="bg-white rounded-3xl p-8 md:p-10 border-2 border-rose-200 shadow-sm relative overflow-hidden group hover:shadow-xl transition-all duration-500">
             <div className="flex items-center justify-between mb-8 pb-4 border-b border-rose-100">
               <div className="flex items-center gap-3">
@@ -29,7 +29,7 @@ const OperationalRealityComparison = () => {
                   <span className="text-[10px] font-mono uppercase tracking-wider text-rose-500 font-bold block">
                     Internal Management
                   </span>
-                  <h3 className="text-xl font-bold text-[#3E2522]">Without Acrossa</h3>
+                  <h3 className="text-xl font-bold text-[#3E2522]">Without {site.name}</h3>
                 </div>
               </div>
               <span className="text-xs font-mono font-bold text-rose-600 bg-rose-50 px-3 py-1 rounded-full border border-rose-200">
@@ -72,8 +72,6 @@ const OperationalRealityComparison = () => {
               ))}
             </ul>
           </div>
-
-          {/* With Acrossa */}
           <div className="bg-[#2A1816] text-[#FFF2DF] rounded-3xl p-8 md:p-10 border-2 border-[#D3A376]/40 shadow-2xl relative overflow-hidden group hover:border-[#D3A376] transition-all duration-500">
             <div className="absolute top-0 right-0 w-64 h-64 bg-[#D3A376]/10 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -84,9 +82,9 @@ const OperationalRealityComparison = () => {
                 </div>
                 <div>
                   <span className="text-[10px] font-mono uppercase tracking-wider text-[#D3A376] font-bold block">
-                    Acrossa Remote Desk
+                    {site.name} Remote Desk
                   </span>
-                  <h3 className="text-xl font-bold text-[#FFF2DF]">With Acrossa</h3>
+                  <h3 className="text-xl font-bold text-[#FFF2DF]">With {site.name}</h3>
                 </div>
               </div>
               <span className="text-xs font-mono font-bold text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/30 flex items-center gap-1.5">

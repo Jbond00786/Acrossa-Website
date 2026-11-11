@@ -1,3 +1,4 @@
+import { site } from '../../config/site.js';
 import { useEffect, useState } from 'react';
 import { Link, NavLink as RouterNavLink, useLocation } from 'react-router-dom';
 import { ChevronRight, Menu, X } from 'lucide-react';
@@ -43,7 +44,7 @@ export default function Header() {
         aria-label="Main navigation"
         className={`w-full px-6 md:px-12 lg:px-24 flex justify-between items-center fixed top-0 left-0 z-50 transition-all duration-300 ${navBg}`}
       >
-        <Link to="/" aria-label="ACROSSA home" className="flex items-center group">
+        <Link to="/" aria-label={`${site.name} home`} className="flex items-center group">
           <Logo
             dark={!isDarkText}
             className="group-hover:scale-105 transition-transform duration-300"

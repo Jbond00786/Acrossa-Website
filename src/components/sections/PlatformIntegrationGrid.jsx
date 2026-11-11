@@ -1,3 +1,4 @@
+import { services } from '../../config/site.js';
 import { useState } from 'react';
 import { Layers, CheckCircle2 } from 'lucide-react';
 import RevealOnScroll from '../visuals/RevealOnScroll.jsx';
@@ -9,7 +10,7 @@ const PlatformIntegrationGrid = () => {
   const platforms = [
     {
       name: 'TrackTik',
-      category: 'security',
+      category: 'security-dispatching',
       catLabel: 'Security Operations',
       badge: 'Guard & DAR Audits',
       desc: 'Live tour checkpoint monitoring, geofence patrol tracking, and real-time incident report verification.',
@@ -32,7 +33,7 @@ const PlatformIntegrationGrid = () => {
     },
     {
       name: 'Silvertrac',
-      category: 'security',
+      category: 'security-dispatching',
       catLabel: 'Security Patrols',
       badge: 'Incident Logging',
       desc: 'Daily Activity Report (DAR) auditing, automated post orders, and priority supervisor dispatch.',
@@ -58,7 +59,7 @@ const PlatformIntegrationGrid = () => {
     },
     {
       name: 'Connecteam',
-      category: 'workforce',
+      category: 'security-dispatching',
       catLabel: 'Workforce & Rosters',
       badge: 'Shift Attendance',
       desc: 'Live mobile punch-clock reconciliation, open-shift fill coordination, and operational team communications.',
@@ -87,7 +88,7 @@ const PlatformIntegrationGrid = () => {
     },
     {
       name: 'Samsara',
-      category: 'logistics',
+      category: 'truck-dispatching',
       catLabel: 'Fleet Telematics',
       badge: 'ELD & Route Telemetry',
       desc: 'Hours of Service (HOS) monitoring, real-time geofence tracking, and driver safety exception alerts.',
@@ -105,11 +106,11 @@ const PlatformIntegrationGrid = () => {
       ),
     },
     {
-      name: 'ServiceTitan',
-      category: 'field-service',
-      catLabel: 'Field Trades Ops',
-      badge: 'Capacity Dispatch',
-      desc: 'Trade technician routing, emergency job assignment, arrival window alerts, and quote tracking.',
+      name: 'Microsoft 365',
+      category: 'remote-it-support',
+      catLabel: 'User Applications',
+      badge: 'User Support',
+      desc: 'Guide users through approved troubleshooting for email, sign-in, and everyday productivity applications.',
       color: 'from-blue-700 to-blue-950',
       logo: (
         <svg viewBox="0 0 40 40" className="w-7 h-7" fill="none">
@@ -125,11 +126,11 @@ const PlatformIntegrationGrid = () => {
       ),
     },
     {
-      name: 'Jobber',
-      category: 'field-service',
-      catLabel: 'Contractor Operations',
-      badge: 'Job & ETA Routing',
-      desc: 'Scheduling density optimization, customer ETA messaging, work order logs, and invoice close-outs.',
+      name: 'Your IT Helpdesk',
+      category: 'remote-it-support',
+      catLabel: 'Technical Support',
+      badge: 'Ticket Triage',
+      desc: 'Document technical issues, record troubleshooting steps, and route specialist problems to your IT team.',
       color: 'from-emerald-600 to-teal-700',
       logo: (
         <svg viewBox="0 0 40 40" className="w-7 h-7" fill="none">
@@ -147,7 +148,7 @@ const PlatformIntegrationGrid = () => {
     },
     {
       name: 'Zendesk',
-      category: 'support',
+      category: 'call-center-customer-care',
       catLabel: 'Helpdesk & Triage',
       badge: '24/7 Tier-1 Desk',
       desc: 'Fast inquiry intake, priority ticket classification, customer queue management, and warm supervisor handoffs.',
@@ -173,7 +174,7 @@ const PlatformIntegrationGrid = () => {
     },
     {
       name: 'RingCentral',
-      category: 'support',
+      category: 'call-center-customer-care',
       catLabel: 'VoIP & Communications',
       badge: 'Inbound Call Desk',
       desc: 'Live phone answering, IVR call overflow, dispatch audio recordings, and SMS communication queues.',
@@ -200,10 +201,7 @@ const PlatformIntegrationGrid = () => {
 
   const categories = [
     { id: 'all', label: 'All Ecosystems' },
-    { id: 'security', label: 'Security & Patrols' },
-    { id: 'logistics', label: 'Fleet & Trucking' },
-    { id: 'field-service', label: 'Field Trades' },
-    { id: 'support', label: 'Support & Voice' },
+    ...services.map(({ id, name }) => ({ id, label: name })),
   ];
 
   const filtered =
@@ -211,7 +209,6 @@ const PlatformIntegrationGrid = () => {
 
   return (
     <section className="w-full px-6 md:px-12 lg:px-24 py-24 bg-[#FFF2DF] border-t border-[#8C6E63]/10 relative overflow-hidden">
-      {/* Background Ambience */}
       <div className="absolute top-0 right-1/4 w-96 h-96 bg-[#D3A376]/10 rounded-full blur-3xl pointer-events-none"></div>
       <div className="absolute bottom-0 left-10 w-96 h-96 bg-[#8C6E63]/10 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -230,8 +227,6 @@ const PlatformIntegrationGrid = () => {
               from Day 1.
             </p>
           </RevealOnScroll>
-
-          {/* Category Filter Tabs */}
           <div className="flex flex-wrap justify-center gap-2 mt-8">
             {categories.map((tab) => {
               const isSelected = activeCategory === tab.id;
@@ -251,8 +246,6 @@ const PlatformIntegrationGrid = () => {
             })}
           </div>
         </div>
-
-        {/* Animated Platform Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {filtered.map((plat, idx) => {
             const isHovered = hoveredPlatform === plat.name;
@@ -267,13 +260,11 @@ const PlatformIntegrationGrid = () => {
                       : 'border-[#8C6E63]/15 shadow-sm hover:border-[#D3A376]/60 hover:shadow-md'
                   }`}
                 >
-                  {/* Hover ambient color flare */}
                   <div
                     className={`absolute -top-12 -right-12 w-28 h-28 rounded-full blur-xl transition-all duration-700 pointer-events-none opacity-20 group-hover:opacity-40 bg-gradient-to-br ${plat.color}`}
                   ></div>
 
                   <div>
-                    {/* Header: Logo + Live Connection Beacon */}
                     <div className="flex items-center justify-between mb-5">
                       <div className="relative flex items-center justify-center p-1 rounded-xl transition-transform duration-500 group-hover:scale-110 shadow-sm">
                         {plat.logo}
@@ -295,8 +286,6 @@ const PlatformIntegrationGrid = () => {
                       {plat.desc}
                     </p>
                   </div>
-
-                  {/* Card Footer */}
                   <div className="mt-6 pt-4 border-t border-[#8C6E63]/10 flex items-center justify-between text-xs">
                     <span className="flex items-center gap-1.5 text-emerald-600 font-semibold text-[11px]">
                       <CheckCircle2 size={13} /> Native Session
@@ -310,8 +299,6 @@ const PlatformIntegrationGrid = () => {
             );
           })}
         </div>
-
-        {/* Live Ecosystem Telemetry Bar */}
         <div className="mt-12 bg-[#2A1816] text-[#FFF2DF] rounded-2xl p-6 md:p-8 border border-[#D3A376]/25 shadow-xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
           <div className="flex items-center gap-4 relative z-10">
             <div className="w-12 h-12 rounded-xl bg-[#D3A376]/20 border border-[#D3A376]/30 text-[#D3A376] flex items-center justify-center font-bold flex-shrink-0">

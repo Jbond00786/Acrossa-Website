@@ -51,3 +51,9 @@ Before merging to `main` (which publishes automatically):
 5. Confirm production builds have indexable robots metadata. After publishing, inspect the new clean URLs and the updated `/sitemap.xml` in Search Console.
 
 Legacy links such as `/#services` are translated client-side to the new paths. Server redirects cannot see URL fragments. Ordinary in-page fragment links still scroll to their target after the page renders.
+
+## Service catalog
+
+Edit `src/config/site.js` to change shared service names, IDs, descriptions, feature lists, brand details, or contact information. `src/config/routes.js` composes page metadata from that catalog. Vite generates the fallback document head; the pre-render step generates each page’s static head. Do not duplicate service labels in page markup or `index.html`.
+
+`npm run lint` rejects warnings. The browser suite tests each service option with intercepted submissions; it does not send real inquiries. Three.js core and renderer stay in separate deferred chunks without raising the bundle-warning threshold.

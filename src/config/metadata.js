@@ -1,4 +1,4 @@
-import { site, absoluteUrl } from './site.js';
+import { site, services, absoluteUrl } from './site.js';
 import { findRoute, routes } from './routes.js';
 
 export const escapeHtml = (value) =>
@@ -25,6 +25,14 @@ export function structuredData(route) {
         description: site.description,
         email: site.emails,
         areaServed: site.areaServed,
+        hasOfferCatalog: {
+          '@type': 'OfferCatalog',
+          name: 'Core services',
+          itemListElement: services.map((service) => ({
+            '@type': 'Offer',
+            itemOffered: { '@id': `${site.url}/services#${service.id}` },
+          })),
+        },
         contactPoint: [
           ...site.emails.map((email) => ({
             '@type': 'ContactPoint',
@@ -66,15 +74,12 @@ export function structuredData(route) {
         about: { '@id': organizationId },
         inLanguage: 'en',
       },
-      ...[
-        'Security dispatching',
-        'Truck logistics coordination',
-        'Field service support',
-        'Customer care',
-      ].map((name, i) => ({
+      ...services.map((service) => ({
         '@type': 'Service',
-        '@id': `${site.url}/services#service-${i + 1}`,
-        name,
+        '@id': `${site.url}/services#${service.id}`,
+        name: service.name,
+        description: service.description,
+        serviceType: service.name,
         provider: { '@id': organizationId },
         areaServed: site.areaServed,
         url: absoluteUrl('/services'),
@@ -87,10 +92,10 @@ export function renderHead(path, { noindex = false } = {}) {
   const route = findRoute(path);
   const meta = (key, value, property = false) =>
     `<meta data-route-head ${property ? 'property' : 'name'}="${key}" content="${escapeHtml(value)}">`;
-  const title = route?.title ?? 'Page Not Found | ACROSSA';
+  const title = route?.title ?? `Page Not Found | ${site.name}`;
   const description =
     route?.description ??
-    'This page could not be found. Explore ACROSSA’s services or contact our team.';
+    `This page could not be found. Explore ${site.name}’s services or contact our team.`;
   const tags = [
     `<title data-route-head>${escapeHtml(title)}</title>`,
     meta('description', description),
@@ -102,7 +107,7 @@ export function renderHead(path, { noindex = false } = {}) {
     meta('og:image', absoluteUrl(site.socialImage), true),
     meta('og:image:width', '1200', true),
     meta('og:image:height', '630', true),
-    meta('og:image:alt', 'ACROSSA — Remote operations for the United States and Canada', true),
+    meta('og:image:alt', `${site.name} — Remote operations for the United States and Canada`, true),
     meta('twitter:card', 'summary_large_image'),
     meta('twitter:title', title),
     meta('twitter:description', description),

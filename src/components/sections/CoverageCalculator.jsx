@@ -1,9 +1,9 @@
+import { site } from '../../config/site.js';
 import { useState, useMemo } from 'react';
 import { ArrowRight, Sliders } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const CoverageCalculator = () => {
-  const [vertical, setVertical] = useState('security');
   const [shiftsPerDay, setShiftsPerDay] = useState(6);
   const [coverageWindow, setCoverageWindow] = useState('24/7');
 
@@ -37,36 +37,13 @@ const CoverageCalculator = () => {
             </h3>
           </div>
           <p className="text-sm text-[#3E2522]/70 max-w-xs">
-            See how much administrative coordination Acrossa absorbs from your leadership team each
-            month.
+            See how much administrative coordination {site.name} absorbs from your leadership team
+            each month.
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           <div className="lg:col-span-7 space-y-6">
-            <div>
-              <p className="block text-sm font-bold text-[#3E2522] mb-2">Operational Sector</p>
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  { id: 'security', label: 'Security' },
-                  { id: 'logistics', label: 'Logistics' },
-                  { id: 'field', label: 'Field Trades' },
-                ].map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => setVertical(item.id)}
-                    className={`py-2.5 px-3 rounded-lg text-xs md:text-sm font-bold transition-all border ${
-                      vertical === item.id
-                        ? 'bg-[#3E2522] text-[#FFF2DF] border-[#3E2522]'
-                        : 'bg-[#FFF2DF]/40 text-[#3E2522] border-[#8C6E63]/20 hover:border-[#D3A376]'
-                    }`}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-
             <div>
               <div className="flex justify-between items-center mb-2">
                 <label htmlFor="daily-shifts" className="text-sm font-bold text-[#3E2522]">

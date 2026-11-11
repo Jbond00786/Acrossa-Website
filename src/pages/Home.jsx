@@ -1,6 +1,7 @@
+import { site, services } from '../config/site.js';
+import ServiceIcon from '../components/visuals/ServiceIcon.jsx';
 import {
   ArrowRight,
-  CalendarDays,
   Layers,
   Activity,
   CheckCircle2,
@@ -63,9 +64,7 @@ const HomeView = () => (
             delay={200}
             className="text-base md:text-xl text-[#FFF2DF]/85 leading-relaxed max-w-xl mb-8 font-medium"
           >
-            Our 45+ member team provides remote security dispatching, truck logistics coordination,
-            field service support, and customer care across the United States and Canada—working
-            directly in your existing software platforms.
+            {site.description}
           </RevealOnScroll>
 
           <RevealOnScroll
@@ -93,8 +92,6 @@ const HomeView = () => (
     </section>
 
     <OperationalMetricsStrip />
-
-    {/* Section: Operational Friction Cards with Micro-Animations */}
     <section className="w-full px-6 md:px-12 lg:px-24 py-24 bg-[#FFE0B2]/30 relative border-t border-[#8C6E63]/10">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
         <div>
@@ -197,8 +194,6 @@ const HomeView = () => (
     </section>
 
     <OperationalRealityComparison />
-
-    {/* Section: Practical Support (3 Main Core Offerings) */}
     <section className="w-full px-6 md:px-12 lg:px-24 py-24 bg-[#FFF2DF]">
       <div className="w-full flex flex-col items-center mb-16 text-center max-w-3xl mx-auto">
         <RevealOnScroll
@@ -210,35 +205,21 @@ const HomeView = () => (
         </RevealOnScroll>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-7xl mx-auto">
-        {[
-          {
-            icon: <CalendarDays size={26} />,
-            title: 'Scheduling & Coverage',
-            desc: 'Shift confirmations, open-shift tracking, availability coordination, and attendance follow-ups.',
-          },
-          {
-            icon: <Activity size={26} />,
-            title: 'Dispatch & Comms',
-            desc: 'Cross-industry dispatching, routine field communications, live tracking, and escalations.',
-          },
-          {
-            icon: <Layers size={26} />,
-            title: 'Admin & Reporting',
-            desc: 'Timesheet tracking, operational summaries, SOP maintenance, and task coordination.',
-          },
-        ].map((service, i) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-7xl mx-auto">
+        {services.map((service, i) => (
           <RevealOnScroll key={i} direction="up" delay={150 * i} className="h-full">
             <Link
-              to="/services"
+              to={`/services#${service.id}`}
               className="group bg-white border border-[#8C6E63]/10 rounded-xl p-10 flex flex-col justify-between hover:shadow-xl hover:border-[#D3A376]/50 hover:-translate-y-2 transition-all duration-500 cursor-pointer h-full"
             >
               <div>
                 <div className="w-14 h-14 bg-[#FFE0B2]/30 border border-[#D3A376]/30 rounded-lg flex items-center justify-center mb-8 text-[#3E2522] group-hover:bg-[#D3A376] group-hover:text-white group-hover:scale-110 transition-all duration-500">
-                  {service.icon}
+                  <ServiceIcon serviceId={service.id} size={26} />
                 </div>
-                <h3 className="text-2xl font-bold mb-4 text-[#3E2522]">{service.title}</h3>
-                <p className="text-[#3E2522]/70 leading-relaxed font-medium mb-8">{service.desc}</p>
+                <h3 className="text-2xl font-bold mb-4 text-[#3E2522]">{service.name}</h3>
+                <p className="text-[#3E2522]/70 leading-relaxed font-medium mb-8">
+                  {service.description}
+                </p>
               </div>
               <span className="font-bold text-[#8C6E63] group-hover:text-[#D3A376] flex items-center gap-2 transition-colors duration-300 w-fit uppercase text-xs tracking-wider">
                 View Deliverables{' '}
@@ -252,8 +233,6 @@ const HomeView = () => (
         ))}
       </div>
     </section>
-
-    {/* Section: Built for Growing Teams */}
     <section className="w-full px-6 md:px-12 lg:px-24 py-24 bg-[#3E2522] text-[#FFF2DF]">
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-16 items-center">
         <div className="lg:w-5/12">
@@ -302,8 +281,6 @@ const HomeView = () => (
         </div>
       </div>
     </section>
-
-    {/* Section: Animated Process Flow */}
     <section className="w-full px-6 md:px-12 lg:px-24 py-24 bg-[#FFF2DF]">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
@@ -321,8 +298,6 @@ const HomeView = () => (
         </RevealOnScroll>
       </div>
     </section>
-
-    {/* Section: Operational Principles (Accountability Grid with Expanding Overlays) */}
     <section className="w-full px-6 md:px-12 lg:px-24 py-24 bg-[#FFE0B2]/30 border-t border-[#8C6E63]/10">
       <div className="max-w-4xl mx-auto text-center mb-16">
         <RevealOnScroll
@@ -397,8 +372,6 @@ const HomeView = () => (
         ))}
       </div>
     </section>
-
-    {/* Section: Visibility into Daily Work (Animated Deliverables + 3D Live Feed) */}
     <section className="w-full px-6 md:px-12 lg:px-24 py-24 bg-[#FFF2DF]">
       <div className="max-w-7xl mx-auto">
         <div className="lg:w-1/2 pr-0 lg:pr-8 mb-12">

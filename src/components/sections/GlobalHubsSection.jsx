@@ -1,3 +1,4 @@
+import { site, services } from '../../config/site.js';
 import RevealOnScroll from '../visuals/RevealOnScroll.jsx';
 
 const GlobalHubsSection = () => (
@@ -19,19 +20,19 @@ const GlobalHubsSection = () => (
             <p>
               Founded in 2025 by <strong>Rafiullah Waheed</strong>—drawing on his{' '}
               <strong>Master of Business Administration (MBA)</strong> and over{' '}
-              <strong>7 years of specialized experience</strong> in remote security dispatching,
-              administrative management, and global workforce coordination—Acrossa was created with
-              one clear goal: helping companies run smoother, faster, and more professionally
+              <strong>7 years of specialized experience</strong> in {services[0].name},
+              administrative management, and global workforce coordination—{site.name} was created
+              with one clear goal: helping companies run smoother, faster, and more professionally
               through trusted remote operations. We are not just another outsourcing company. We
               become a real part of your daily operations.
             </p>
           </RevealOnScroll>
           <RevealOnScroll direction="left" delay={200}>
             <p>
-              Today, our 45+ member team works across Afghanistan, Pakistan, Philippines, India,
-              Bangladesh, and Indonesia, supporting businesses that need reliable dispatching,
-              scheduling, coordination, client communication, reporting, and operational support
-              every single day.
+              Today, our {site.teamSize} member team works across Afghanistan, Pakistan,
+              Philippines, India, Bangladesh, and Indonesia, supporting businesses that need
+              reliable dispatching, scheduling, coordination, client communication, reporting, and
+              operational support every single day.
             </p>
           </RevealOnScroll>
           <RevealOnScroll direction="left" delay={300}>

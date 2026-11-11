@@ -1,3 +1,4 @@
+import { site } from '../../config/site.js';
 import { useState } from 'react';
 import { ChevronDown, HelpCircle } from 'lucide-react';
 
@@ -6,11 +7,11 @@ const FAQAccordionSection = () => {
 
   const faqs = [
     {
-      q: 'How quickly can Acrossa integrate into our current software?',
-      a: "Most engagements launch within 48 to 72 hours. We don't require you to migrate to proprietary software; we simply onboard our vetted operators into your existing systems (such as TrackTik, Samsara, ServiceTitan, or Connecteam) using client-authorized credentials.",
+      q: `How quickly can ${site.name} integrate into our current software?`,
+      a: "Most engagements launch within 48 to 72 hours. We don't require you to migrate to proprietary software; we simply onboard our vetted operators into your existing systems (such as TrackTik, Samsara, Microsoft 365, or Connecteam) using client-authorized credentials.",
     },
     {
-      q: 'How does Acrossa handle critical operational emergencies?',
+      q: `How does ${site.name} handle critical operational emergencies?`,
       a: 'During onboarding, we establish a rigid, documented Escalation Matrix. When a high-severity incident occurs—such as an uncontained facility alarm or a vehicular accident—our desk immediately coordinates with frontline staff and executes direct warm-transfers to your designated on-call contacts per your protocol.',
     },
     {

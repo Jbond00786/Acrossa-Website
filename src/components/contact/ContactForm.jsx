@@ -1,3 +1,4 @@
+import { site, services, serviceList } from '../../config/site.js';
 import { useState } from 'react';
 import { CheckCircle2, Shield, AlertCircle } from 'lucide-react';
 
@@ -16,7 +17,7 @@ const ContactForm = () => {
     const web3FormsKey =
       import.meta.env?.VITE_WEB3FORMS_KEY || 'f02e1205-164f-4bd7-af41-abac17113875';
     formData.append('access_key', web3FormsKey);
-    formData.append('subject', 'New Inquiry from Acrossa Website');
+    formData.append('subject', `New Inquiry from ${site.name} Website`);
 
     try {
       const response = await fetch('https://api.web3forms.com/submit', {
@@ -31,14 +32,12 @@ const ContactForm = () => {
         setIsSubmitting(false);
         setErrorMessage(
           data.message ||
-            'Failed to submit inquiry. Please email us directly at contact@acrossaops.com.',
+            `Failed to submit inquiry. Please email us directly at ${site.emails[0]}.`,
         );
       }
     } catch {
       setIsSubmitting(false);
-      setErrorMessage(
-        'Network error connecting to form service. Please email contact@acrossaops.com.',
-      );
+      setErrorMessage(`Network error connecting to form service. Please email ${site.emails[0]}.`);
     }
   };
 
@@ -133,7 +132,7 @@ const ContactForm = () => {
                 autoComplete="organization"
                 required
                 className="w-full bg-[#FFF2DF]/30 border border-[#8C6E63]/20 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#D3A376]"
-                placeholder="Acme Logistics / Patrol"
+                placeholder="Your company name"
               />
             </div>
             <div>
@@ -169,14 +168,12 @@ const ContactForm = () => {
                 required
                 className="w-full bg-[#FFF2DF]/30 border border-[#8C6E63]/20 rounded-lg px-3 py-2.5 text-sm text-[#3E2522] focus:outline-none focus:border-[#D3A376]"
               >
-                <option value="">Select service...</option>
-                <option value="security-dispatching">Security Dispatching</option>
-                <option value="truck-dispatching">Truck Dispatching</option>
-                <option value="field-service-dispatching">Field Service Dispatching</option>
-                <option value="call-center-inbound">Call Center & Inbound</option>
-                <option value="scheduling-coverage">Scheduling & Coverage</option>
-                <option value="operations-administration">Operations Administration</option>
-                <option value="multiple-custom">Multiple / Custom Scope</option>
+                <option value="">Choose one of our four services...</option>
+                {services.map((service) => (
+                  <option key={service.id} value={service.id}>
+                    {service.name}
+                  </option>
+                ))}
               </select>
             </div>
             <div>
@@ -213,7 +210,7 @@ const ContactForm = () => {
               type="text"
               name="current_software"
               className="w-full bg-[#FFF2DF]/30 border border-[#8C6E63]/20 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#D3A376]"
-              placeholder="e.g. TrackTik, Silvertrac, Samsara, ServiceTitan, Connecteam"
+              placeholder="e.g. TrackTik, Samsara, Microsoft 365, Zendesk"
             />
           </div>
 
@@ -230,7 +227,7 @@ const ContactForm = () => {
               required
               rows="3"
               className="w-full bg-[#FFF2DF]/30 border border-[#8C6E63]/20 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#D3A376] resize-none"
-              placeholder="What takes up most of your day?"
+              placeholder={`Describe your needs for ${serviceList}.`}
             ></textarea>
           </div>
 

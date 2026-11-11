@@ -1,48 +1,44 @@
+import { site, services, serviceList } from './site.js';
 // Update lastmod only when the page content meaningfully changes.
 export const routes = [
   {
     path: '/',
     label: 'Home',
-    title: 'ACROSSA | Remote Security Dispatching & Operations Support',
-    description:
-      'Our 45+ member team provides remote security dispatching, truck logistics coordination, field service support, and customer care in your existing platforms.',
-    lastmod: '2026-11-10',
+    title: `${site.name} | ${services[0].name} & Remote Services`,
+    description: `${serviceList} from ${site.name}’s ${site.teamSize} member team, working in your existing platforms.`,
+    lastmod: '2026-11-11',
     priority: '1.0',
   },
   {
     path: '/services',
     label: 'Services',
-    title: 'Remote Dispatching & Customer Care Services | ACROSSA',
-    description:
-      'Explore remote security dispatching, truck logistics coordination, field service support, and customer care from ACROSSA’s 45+ member team serving the US and Canada.',
-    lastmod: '2026-11-10',
+    title: `Our Four Core Services | ${site.name}`,
+    description: `Explore ${serviceList} for businesses across the US and Canada.`,
+    lastmod: '2026-11-11',
     priority: '0.9',
   },
   {
     path: '/how-we-work',
     label: 'How We Work',
-    title: 'How Our Remote Operations Support Works | ACROSSA',
-    description:
-      'Agree on scope, coverage hours, access, and escalation procedures. ACROSSA’s remote team works directly in your software platforms across the US and Canada.',
-    lastmod: '2026-11-10',
+    title: `How Our Remote Services Work | ${site.name}`,
+    description: `Plan coverage, platform access, and escalation for ${serviceList}.`,
+    lastmod: '2026-11-11',
     priority: '0.7',
   },
   {
     path: '/about',
     label: 'About',
-    title: 'About ACROSSA | A 45+ Member Remote Operations Team',
-    description:
-      'Founded in 2025, ACROSSA supports US and Canadian businesses with a 45+ member team delivering remote dispatching, field service support, and customer care.',
-    lastmod: '2026-11-10',
+    title: `About ${site.name} | Your Remote Services Team`,
+    description: `Founded in ${site.foundingDate}, ${site.name} provides ${serviceList} with a ${site.teamSize} member team.`,
+    lastmod: '2026-11-11',
     priority: '0.7',
   },
   {
     path: '/contact',
     label: 'Contact',
-    title: 'Contact ACROSSA | Discuss Your Remote Operations',
-    description:
-      'Contact ACROSSA by email, WhatsApp, or inquiry form to discuss security dispatching, truck logistics coordination, field service support, and customer care.',
-    lastmod: '2026-11-10',
+    title: `Contact ${site.name} | Discuss Your Service Needs`,
+    description: `Contact ${site.name} by email, WhatsApp, or inquiry form for ${serviceList}.`,
+    lastmod: '2026-11-11',
     priority: '0.8',
   },
 ];

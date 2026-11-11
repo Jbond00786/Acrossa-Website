@@ -1,3 +1,4 @@
+import { site } from '../src/config/site.js';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
@@ -117,7 +118,7 @@ test('contact payload, pending, success, reset, error and retry use intercepted 
     assert.equal(doc.querySelector('button[type="submit"]').disabled, true);
     assert.equal(payload.get('name'), 'Test Visitor');
     assert.ok(payload.get('access_key'));
-    assert.equal(payload.get('subject'), 'New Inquiry from Acrossa Website');
+    assert.equal(payload.get('subject'), `New Inquiry from ${site.name} Website`);
     // Unchecked checkbox honeypots are omitted by native FormData; keep the field intact.
     assert.ok(form.elements.botcheck);
     assert.equal(form.elements.botcheck.checked, false);

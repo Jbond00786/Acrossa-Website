@@ -1,3 +1,4 @@
+import { site, serviceList } from '../config/site.js';
 import RevealOnScroll from '../components/visuals/RevealOnScroll.jsx';
 import PageHeader from '../components/layout/PageHeader.jsx';
 import FinalCTA from '../components/sections/FinalCTA.jsx';
@@ -7,8 +8,8 @@ const HowWeWorkView = () => (
   <div className="w-full animate-in fade-in duration-500">
     <PageHeader
       eyebrow="How We Work"
-      title="Structured Onboarding. Predictable Execution."
-      subtitle="We believe in clear boundaries, structured communication, and documented processes to ensure a reliable remote partnership."
+      title="Clear Setup. Predictable Execution."
+      subtitle={`Set up ${serviceList} with clear scope, authorized platform access, and documented escalation procedures at ${site.name}.`}
     />
 
     <section className="max-w-5xl mx-auto px-6 md:px-12 lg:px-24 py-12">
@@ -26,7 +27,7 @@ const HowWeWorkView = () => (
           },
           {
             num: '03',
-            title: 'Secure System Onboarding',
+            title: 'Secure System Setup',
             desc: 'We configure authorized operator logins inside your software, set up private communication channels, and perform end-to-end communication tests.',
           },
           {

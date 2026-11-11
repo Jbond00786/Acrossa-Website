@@ -1,3 +1,4 @@
+import { services } from '../src/config/site.js';
 import { test, expect } from '@playwright/test';
 import { routes } from '../src/config/routes.js';
 
@@ -158,4 +159,53 @@ test('normalization and real 404 on production-file server', async ({ request, p
   expect(response.status()).toBe(404);
   await expect(page.getByRole('heading', { name: 'Let’s get you back on track.' })).toBeVisible();
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, follow');
+});
+
+for (const service of services) {
+  test(`service navigation and inquiry selection: ${service.name}`, async ({ page }) => {
+    let payload = '';
+    await page.route('https://api.web3forms.com/submit', async (route) => {
+      payload = route.request().postData();
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ success: true }),
+      });
+    });
+    await page.goto('/');
+    await page.locator(`a[href="/services#${service.id}"]`).click();
+    await expect(page).toHaveURL(`/services#${service.id}`);
+    const card = page.locator(`[id="${service.id}"]`);
+    await card.getByRole('button').click();
+    await expect(card.getByRole('button')).toHaveAttribute('aria-expanded', 'true');
+    await expect(card.getByText(service.description, { exact: true })).toBeVisible();
+    await page.goto('/contact');
+    await fillForm(page);
+    await expect(page.locator('select[name="service_needed"] option')).toHaveText([
+      'Choose one of our four services...',
+      ...services.map((item) => item.name),
+    ]);
+    await page.getByLabel('Services Needed').selectOption({ label: service.name });
+    await page.locator('button[type="submit"]').click();
+    await expect(page.getByRole('status')).toHaveText('Inquiry Received');
+    expect(payload).toContain(service.id);
+  });
+}
+
+test('desktop loads split 3D assets; mobile keeps static hero', async ({ page }) => {
+  const scripts = [];
+  const errors = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  page.on('response', (response) => {
+    if (response.url().endsWith('.js')) scripts.push(response.url());
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  await page.waitForTimeout(1800);
+  expect(scripts.some((url) => /Hero3D|three-core/.test(url))).toBe(false);
+  await page.setViewportSize({ width: 1440, height: 960 });
+  await page.reload();
+  await expect.poll(() => scripts.some((url) => /three-core/.test(url))).toBe(true);
+  await expect(page.locator('canvas')).toHaveCount(1);
+  expect(errors).toEqual([]);
 });
