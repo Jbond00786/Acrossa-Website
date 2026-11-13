@@ -1,5 +1,5 @@
 import { site, services, serviceDeck } from '../config/site.js';
-import ServiceCard from '../components/sections/ServiceCard.jsx';
+import ServiceDeck from '../components/sections/ServiceCard.jsx';
 import ServiceIcon from '../components/visuals/ServiceIcon.jsx';
 import PageHeader from '../components/layout/PageHeader.jsx';
 import FinalCTA from '../components/sections/FinalCTA.jsx';
@@ -12,11 +12,7 @@ export default function ServicesView() {
     <div className="w-full animate-in fade-in duration-500">
       <PageHeader eyebrow="Our Services" title={serviceDeck.title} subtitle={site.description} />
       <section className="service-deck service-deck--page" aria-label="Core services">
-        <div className="service-deck__grid">
-          {services.map((service) => (
-            <ServiceCard key={service.id} service={service} />
-          ))}
-        </div>
+        <ServiceDeck />
       </section>
       <div className="max-w-5xl mx-auto px-6 md:px-12 py-12">
         <DispatchAccordion

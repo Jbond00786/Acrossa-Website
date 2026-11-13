@@ -1,5 +1,5 @@
-import { site, services, serviceDeck } from '../config/site.js';
-import ServiceCard from '../components/sections/ServiceCard.jsx';
+import { site, serviceDeck } from '../config/site.js';
+import ServiceDeck from '../components/sections/ServiceCard.jsx';
 import {
   ArrowRight,
   Layers,
@@ -200,11 +200,7 @@ const HomeView = () => (
         <h2 id="home-services-title">{serviceDeck.title}</h2>
         <p>{serviceDeck.intro}</p>
       </div>
-      <div className="service-deck__grid">
-        {services.map((service) => (
-          <ServiceCard key={service.id} service={service} preview />
-        ))}
-      </div>
+      <ServiceDeck preview />
     </section>
     <section className="w-full px-6 md:px-12 lg:px-24 py-24 bg-[#3E2522] text-[#FFF2DF]">
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-16 items-center">

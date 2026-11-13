@@ -46,7 +46,7 @@ test('client navigation, back/forward, legacy links and anchors', async ({ page 
   await page.goto('/');
   await page.getByRole('link', { name: 'Explore All Services' }).click();
   await expect(page).toHaveURL(/\/services$/);
-  await expect(page).toHaveTitle(/Services \| ACROSSA/);
+  await expect(page).toHaveTitle('Security & Truck Dispatching, IT & Call Center | ACROSSA');
   await page.goBack();
   await expect(page).toHaveURL('http://127.0.0.1:4173/');
   await page.goForward();
@@ -174,12 +174,16 @@ for (const service of services) {
     });
     await page.goto('/');
     await page.locator(`a[href="/services#${service.id}"]`).click();
-    await expect(page).toHaveURL(`/services#${service.id}`);
-    const card = page.locator(`[id="${service.id}"]`);
-    await card.getByRole('button').click();
-    await expect(card.getByRole('button')).toHaveAttribute('aria-expanded', 'true');
-    await expect(card.getByText(service.description, { exact: true })).toBeVisible();
-    await page.goto('/contact');
+    const dialog = page.getByRole('dialog');
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByRole('heading', { name: service.title, exact: true })).toBeVisible();
+    await expect(
+      dialog.getByRole('tabpanel').getByText(service.summary, { exact: true }),
+    ).toBeVisible();
+    await dialog.getByRole('link', { name: 'Discuss This Service' }).click();
+    await expect(page).toHaveURL(`/contact?service=${service.id}`);
+    await expect(dialog).toHaveCount(0);
+    expect(await page.evaluate(() => document.body.style.overflow)).not.toBe('hidden');
     await fillForm(page);
     await expect(page.locator('select[name="service_needed"] option')).toHaveText([
       'Choose one of our four services...',
@@ -209,3 +213,97 @@ test('desktop loads split 3D assets; mobile keeps static hero', async ({ page })
   await expect(page.locator('canvas')).toHaveCount(1);
   expect(errors).toEqual([]);
 });
+
+for (const size of [
+  { name: 'desktop', width: 1440, height: 960 },
+  { name: 'mobile', width: 390, height: 844 },
+]) {
+  for (const path of ['/', '/services']) {
+    test(`${size.name}: compact command console interactions on ${path}`, async ({ page }) => {
+      await page.setViewportSize(size);
+      await page.emulateMedia({
+        reducedMotion: size.name === 'mobile' ? 'reduce' : 'no-preference',
+      });
+      const errors = [];
+      page.on('pageerror', (error) => errors.push(error.message));
+      await page.goto(path);
+      const cards = page.locator('.command-card');
+      await expect(cards).toHaveCount(4);
+      if (size.name === 'desktop') {
+        const bounds = await cards.evaluateAll((elements) =>
+          elements.map((el) => {
+            const rect = el.getBoundingClientRect();
+            return { x: rect.x, y: rect.y, height: rect.height, width: rect.width };
+          }),
+        );
+        expect(bounds.every(({ height }) => height === 360)).toBe(true);
+        expect(bounds[0].y).toBe(bounds[1].y);
+        expect(bounds[2].y).toBe(bounds[3].y);
+        expect(bounds[0].x).toBe(bounds[2].x);
+        expect(bounds[0].width).toBeLessThanOrEqual(500);
+      }
+      const trigger = cards.first().getByRole('button');
+      await expect(trigger.locator('.command-card__platform-preview li')).toHaveCount(4);
+      expect(
+        await trigger.locator('.command-card__summary').evaluate((el) => el.clientHeight),
+      ).toBeLessThanOrEqual(44);
+      await page
+        .locator('.service-deck__grid')
+        .screenshot({ path: test.info().outputPath('command-grid.png') });
+      await trigger.click();
+      const dialog = page.getByRole('dialog');
+      await expect(dialog).toBeVisible();
+      await expect(dialog.getByRole('button', { name: 'Close command view' })).toBeFocused();
+      expect(await page.evaluate(() => document.body.style.overflow)).toBe('hidden');
+      await expect(
+        dialog.getByRole('tabpanel').getByRole('heading', { name: services[0].title }),
+      ).toBeVisible();
+      await expect(dialog.getByRole('tabpanel').locator('.command-card__tasks li')).toHaveCount(4);
+      await dialog.getByRole('button', { name: 'Next service' }).click();
+      await expect(
+        dialog.getByRole('tabpanel').getByRole('heading', { name: services[1].title }),
+      ).toBeVisible();
+      await page.keyboard.press('ArrowRight');
+      await expect(dialog.getByRole('tab', { selected: true })).toContainText(services[2].title);
+      await page.keyboard.press('ArrowLeft');
+      await expect(dialog.getByRole('tab', { selected: true })).toContainText(services[1].title);
+      await dialog.getByRole('tab', { name: `${services[3].code} ${services[3].title}` }).click();
+      await expect(
+        dialog.getByRole('tabpanel').getByRole('heading', { name: services[3].title }),
+      ).toBeVisible();
+      await dialog.getByRole('button', { name: 'Next service' }).click();
+      await expect(dialog.getByRole('tab', { selected: true })).toContainText(services[0].title);
+      await dialog.getByRole('button', { name: 'Previous service' }).click();
+      await expect(dialog.getByRole('tab', { selected: true })).toContainText(services[3].title);
+      const previous = dialog.getByRole('button', { name: 'Previous service' });
+      await previous.focus();
+      await page.keyboard.press('Shift+Tab');
+      await expect(dialog.getByRole('link', { name: /WhatsApp/ })).toBeFocused();
+      await page.keyboard.press('Tab');
+      await expect(previous).toBeFocused();
+      expect(await dialog.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true);
+      if (size.name === 'mobile') {
+        expect(
+          await dialog
+            .locator('.command-console__frame')
+            .evaluate((el) => getComputedStyle(el).animationName),
+        ).toBe('none');
+        expect(
+          await dialog
+            .getByRole('tabpanel')
+            .evaluate((el) => getComputedStyle(el).transitionDuration),
+        ).toBe('0s');
+      }
+      await page.keyboard.press('Escape');
+      await expect(dialog).toHaveCount(0);
+      await expect(trigger).toBeFocused();
+      expect(await page.evaluate(() => document.body.style.overflow)).not.toBe('hidden');
+      await trigger.press('Space');
+      await expect(dialog).toBeVisible();
+      await dialog.getByRole('button', { name: 'Close command view' }).click();
+      await expect(dialog).toHaveCount(0);
+      await expect(trigger).toBeFocused();
+      expect(errors).toEqual([]);
+    });
+  }
+}

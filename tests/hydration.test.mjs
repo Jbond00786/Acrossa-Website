@@ -1,4 +1,4 @@
-import { site } from '../src/config/site.js';
+import { site, services, serviceDeck } from '../src/config/site.js';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
@@ -25,11 +25,17 @@ async function mount(path = '/', { noMarkup = false, reducedMotion = true } = {}
     pretendToBeVisual: true,
     virtualConsole: console,
   });
-  dom.window.matchMedia = () => ({
-    matches: reducedMotion,
+  dom.window.matchMedia = (query) => ({
+    matches: query.includes('no-preference') ? !reducedMotion : reducedMotion,
     addEventListener() {},
     removeEventListener() {},
   });
+  dom.window.HTMLDialogElement.prototype.showModal = function () {
+    this.open = true;
+  };
+  dom.window.HTMLDialogElement.prototype.close = function () {
+    this.open = false;
+  };
   dom.window.scrollTo = () => {};
   dom.window.HTMLElement.prototype.scrollIntoView = () => {};
   // No WebGL or layout emulation: these tests validate DOM hydration and interactions only.
@@ -71,8 +77,8 @@ test('client navigation updates content, metadata, history, and legacy fragment 
     );
     await tick();
     assert.equal(dom.window.location.pathname, '/services');
-    assert.match(doc.title, /Services \| ACROSSA/);
-    assert.match(doc.querySelector('h1').textContent, /Structured Support/);
+    assert.equal(doc.title, 'Security & Truck Dispatching, IT & Call Center | ACROSSA');
+    assert.equal(doc.querySelector('h1').textContent, serviceDeck.title);
     dom.window.history.back();
     await tick();
     assert.equal(dom.window.location.pathname, '/');
@@ -167,3 +173,99 @@ test('404 hydration and createRoot fallback', async () => {
     }
   }
 });
+
+test('all service details remain in both pre-rendered documents', async () => {
+  for (const file of ['index', 'services']) {
+    const dom = new JSDOM(await readFile(`dist/${file}.html`, 'utf8'));
+    try {
+      const cards = [...dom.window.document.querySelectorAll('.command-card')];
+      assert.equal(cards.length, 4);
+      services.forEach((service, index) => {
+        const card = cards[index];
+        assert.ok(card.textContent.includes(service.summary));
+        assert.equal(card.querySelectorAll('.command-card__tasks li').length, 4);
+        service.tasks.forEach(({ title, description }) => {
+          assert.ok(card.textContent.includes(title));
+          assert.ok(card.textContent.includes(description));
+        });
+        service.platforms.forEach((platform) => assert.ok(card.textContent.includes(platform)));
+        assert.ok(card.textContent.includes(service.platformNote));
+        assert.equal(card.querySelectorAll('.command-card__platform-preview li').length, 4);
+      });
+      assert.equal(dom.window.document.querySelectorAll('dialog').length, 0);
+    } finally {
+      dom.window.close();
+    }
+  }
+});
+
+for (const path of ['/', '/services']) {
+  test(`compact console opens, switches, traps focus, closes and restores scroll: ${path}`, async () => {
+    const { dom, errors, doc } = await mount(path);
+    try {
+      const triggers = [...doc.querySelectorAll('.command-card__trigger')];
+      const key = (value, shiftKey = false) =>
+        doc.activeElement.dispatchEvent(
+          new dom.window.KeyboardEvent('keydown', {
+            key: value,
+            shiftKey,
+            bubbles: true,
+            cancelable: true,
+          }),
+        );
+      doc.body.style.overflow = 'auto';
+      triggers[0].focus();
+      triggers[0].click();
+      await tick();
+      const dialog = doc.querySelector('dialog');
+      assert.equal(dialog.open, true);
+      assert.equal(doc.body.style.overflow, 'hidden');
+      assert.equal(doc.activeElement.getAttribute('aria-label'), 'Close command view');
+      const active = () => dialog.querySelector('[role="tabpanel"][data-active="true"]');
+      assert.equal(active().querySelector('h2').textContent, services[0].title);
+      dialog.querySelector('[aria-label="Next service"]').click();
+      await tick();
+      assert.equal(active().querySelector('h2').textContent, services[1].title);
+      assert.equal(dialog.querySelectorAll('[role="tabpanel"][inert]').length, 3);
+      key('ArrowRight');
+      await tick();
+      assert.equal(active().querySelector('h2').textContent, services[2].title);
+      assert.equal(doc.activeElement.getAttribute('aria-selected'), 'true');
+      key('End');
+      await tick();
+      assert.equal(active().querySelector('h2').textContent, services[3].title);
+      key('Home');
+      await tick();
+      assert.equal(active().querySelector('h2').textContent, services[0].title);
+      const first = dialog.querySelector('[aria-label="Previous service"]');
+      const last = active().querySelector('.command-console__secondary');
+      first.focus();
+      key('Tab', true);
+      assert.equal(doc.activeElement, last);
+      key('Tab');
+      assert.equal(doc.activeElement, first);
+      key('Escape');
+      await tick();
+      assert.equal(doc.querySelector('dialog'), null);
+      assert.equal(doc.body.style.overflow, 'auto');
+      assert.equal(doc.activeElement, triggers[0]);
+      triggers[3].click();
+      await tick();
+      doc.querySelector('[aria-label="Close command view"]').click();
+      await tick();
+      assert.equal(doc.querySelector('dialog'), null);
+      triggers[2].click();
+      await tick();
+      const cta = doc.querySelector('[data-active="true"] .command-console__cta');
+      assert.equal(cta.getAttribute('href'), `/contact?service=${services[2].id}`);
+      cta.click();
+      await tick();
+      assert.equal(dom.window.location.pathname, '/contact');
+      assert.equal(doc.querySelector('dialog'), null);
+      assert.equal(doc.body.style.overflow, 'auto');
+      assert.deepEqual(errors, []);
+    } finally {
+      dom.window.close();
+    }
+  });
+}
