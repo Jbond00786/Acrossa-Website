@@ -12,7 +12,7 @@ export const routes = [
   {
     path: '/services',
     label: 'Services',
-    title: `Our Four Core Services | ${site.name}`,
+    title: `Security & Truck Dispatching, IT & Call Center | ${site.name}`,
     description: `Explore ${serviceList} for businesses across the US and Canada.`,
     lastmod: '2026-11-11',
     priority: '0.9',

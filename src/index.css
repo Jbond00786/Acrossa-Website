@@ -152,3 +152,429 @@ body {
     scroll-behavior: auto !important;
   }
 }
+
+/* Service command deck: all selectors are isolated from the existing page styles. */
+.service-deck {
+  padding: 80px 24px;
+  background: #fff2df;
+}
+.service-deck--page {
+  padding-top: 0;
+}
+.service-deck__heading {
+  max-width: 700px;
+  margin: 0 auto 44px;
+  text-align: center;
+}
+.service-deck__eyebrow {
+  color: #725345;
+  font:
+    700 11px/1.5 ui-monospace,
+    monospace;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.service-deck__heading h2 {
+  color: #3e2522;
+  font-size: clamp(32px, 4vw, 52px);
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  margin: 14px 0 20px;
+}
+.service-deck__heading > p:last-child {
+  color: #725345;
+  font-size: 17px;
+  line-height: 1.7;
+}
+.service-deck__grid {
+  max-width: 1280px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 28px;
+  align-items: stretch;
+}
+.command-card {
+  --mouse-x: 50%;
+  --mouse-y: 25%;
+  --tilt-x: 0deg;
+  --tilt-y: 0deg;
+  position: relative;
+  isolation: isolate;
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  color: #edf5f2;
+  background: linear-gradient(140deg, #152824, #101b1c 60%, #142326);
+  border: 1px solid #34504a;
+  border-radius: 22px;
+  box-shadow: 0 12px 32px -20px #091b19a8;
+  scroll-margin-top: 115px;
+}
+.command-card::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  width: 600px;
+  height: 600px;
+  left: var(--mouse-x);
+  top: var(--mouse-y);
+  transform: translate3d(-50%, -50%, 0);
+  background: radial-gradient(
+    circle,
+    #49eab718,
+    #4bdce609 35%,
+    transparent 65%
+  );
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+.command-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid #6fe9cd85;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 220ms ease;
+}
+.command-card:focus-within::after {
+  opacity: 1;
+}
+.command-card__telemetry {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 84px;
+  padding: 14px 26px;
+  background: #07171455;
+  border-bottom: 1px solid #38504a80;
+}
+.command-card__code {
+  font:
+    600 12px/1 ui-monospace,
+    monospace;
+  letter-spacing: 0.08em;
+  color: #d2ae80;
+  white-space: nowrap;
+}
+.command-card__status {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  color: #8ddac1;
+  font:
+    500 9px/1.4 ui-monospace,
+    monospace;
+  letter-spacing: 0.08em;
+}
+.command-card__beacon {
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  background: #5ee4af;
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px #5ee4af12;
+}
+.command-card__schematic {
+  width: 86px;
+  height: 56px;
+  margin-left: auto;
+  color: #79dac9;
+  flex-shrink: 0;
+}
+.schematic-grid {
+  stroke: currentColor;
+  opacity: 0.22;
+  stroke-width: 1;
+}
+.command-card__body {
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+.command-card h2,
+.command-card h3 {
+  font-size: clamp(24px, 2.6vw, 32px);
+  line-height: 1.16;
+  letter-spacing: -0.03em;
+  margin: 0 0 14px;
+  color: #f3f8f5;
+}
+.service-deck__preview-link {
+  display: block;
+  min-width: 0;
+  text-decoration: none;
+  border-radius: 22px;
+}
+.service-deck__preview-link .command-card {
+  height: 100%;
+}
+.service-deck__preview-link:focus-visible {
+  outline: 3px solid #156f54;
+  outline-offset: 5px;
+}
+.command-card__tagline {
+  color: #9fe3cf;
+  font-size: 13px;
+  line-height: 1.6;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+.command-card__summary {
+  color: #c1ceca;
+  font-size: 14px;
+  line-height: 1.85;
+}
+.command-card__tasks {
+  padding: 25px 0;
+}
+.command-card__label {
+  font:
+    600 10px/1.7 ui-monospace,
+    monospace;
+  color: #b1c9c0;
+  letter-spacing: 0.055em;
+  margin-bottom: 14px;
+}
+.command-card__tasks > .command-card__label {
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+}
+.command-card__tasks ul {
+  display: grid;
+  gap: 17px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.command-card__tasks li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.command-card__task-number {
+  font:
+    500 10px/1.9 ui-monospace,
+    monospace;
+  color: #83b8a4;
+  border: 1px solid #476456;
+  border-radius: 5px;
+  padding: 1px 5px;
+  margin-top: 2px;
+}
+.command-card__tasks li p {
+  font-size: 13px;
+  line-height: 1.75;
+  color: #b9cac3;
+}
+.command-card__tasks li strong {
+  color: #edf5f0;
+  font-weight: 650;
+}
+.command-card__dock {
+  margin-top: auto;
+  border-top: 1px solid #38504a80;
+  padding-top: 22px;
+}
+.command-card__platforms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding: 0;
+  margin: 0 0 15px;
+  list-style: none;
+}
+.command-card__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  border: 1px solid #41564e;
+  border-radius: 7px;
+  padding: 7px 9px;
+  color: #d1e1d9;
+  background: #ffffff04;
+  font-size: 10px;
+  line-height: 1.5;
+}
+.command-card__pill > span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #6b8e7d;
+  flex-shrink: 0;
+}
+.command-card__pill--existing {
+  color: #9ff4d1;
+  background: #1b503d40;
+  border-color: #397e63;
+  box-shadow: inset 0 0 12px #56e3a50a;
+}
+.command-card__note {
+  color: #a8bfb4;
+  font-size: 11px;
+  line-height: 1.85;
+}
+.command-card__action {
+  margin-top: 24px;
+  border-top: 1px solid #38504a80;
+  padding-top: 17px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #a7e6ce;
+  font-size: 12px;
+  font-weight: 650;
+  text-decoration: none;
+}
+.command-card__action > span {
+  font-size: 21px;
+}
+.command-card a:focus-visible {
+  outline: 2px solid #a7e6ce;
+  outline-offset: 5px;
+}
+@media (min-width: 800px) {
+  .service-deck {
+    padding-left: 48px;
+    padding-right: 48px;
+  }
+  .service-deck__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .command-card__intro {
+    min-height: 235px;
+  }
+}
+@media (max-width: 420px) {
+  .service-deck {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .command-card__body {
+    padding: 22px;
+  }
+  .command-card__telemetry {
+    padding: 12px 20px;
+    gap: 8px;
+  }
+  .command-card__schematic {
+    width: 60px;
+  }
+  .command-card__status {
+    font-size: 8px;
+    letter-spacing: 0.015em;
+  }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .command-card {
+    transform: perspective(1400px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
+    transition: transform 180ms ease-out;
+  }
+  .command-card[data-tracking='true']::before,
+  .command-card[data-tracking='true']::after {
+    opacity: 1;
+  }
+  .command-card__pill {
+    transition:
+      transform 160ms ease,
+      background-color 160ms ease,
+      border-color 160ms ease;
+  }
+  .command-card__pill:hover {
+    transform: translateY(-2px);
+    background: #9adfc50c;
+    border-color: #7fcbb0;
+  }
+  .command-card__pill:hover > span {
+    background: #7bf3bc;
+    box-shadow: 0 0 6px #7bf3bc80;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .command-card__beacon,
+  .schematic-signal {
+    animation: deck-signal 3s ease-in-out infinite;
+  }
+  .schematic-radar {
+    transform-origin: 50px 32px;
+    animation: deck-radar 7s linear infinite;
+  }
+  .schematic-route {
+    animation: deck-route 4s linear infinite;
+  }
+  .schematic-cursor {
+    animation: deck-cursor 1.5s steps(1) infinite;
+  }
+  .schematic-wave {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: deck-wave 1.6s ease-in-out infinite alternate;
+    animation-delay: var(--wave-delay);
+  }
+  .command-card:not([data-visible='true']) .command-card__beacon,
+  .command-card:not([data-visible='true']) .command-card__schematic * {
+    animation-play-state: paused;
+  }
+}
+@keyframes deck-signal {
+  0%,
+  100% {
+    opacity: 0.45;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes deck-radar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes deck-route {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  20% {
+    transform: translate(22px, 0);
+  }
+  42% {
+    transform: translate(22px, -30px);
+  }
+  65% {
+    transform: translate(52px, -30px);
+  }
+  82% {
+    transform: translate(52px, -6px);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(76px, -6px);
+    opacity: 0;
+  }
+}
+@keyframes deck-cursor {
+  50% {
+    opacity: 0;
+  }
+}
+@keyframes deck-wave {
+  from {
+    transform: scaleY(0.35);
+    opacity: 0.5;
+  }
+  to {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}

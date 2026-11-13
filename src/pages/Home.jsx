@@ -1,5 +1,5 @@
-import { site, services } from '../config/site.js';
-import ServiceIcon from '../components/visuals/ServiceIcon.jsx';
+import { site, services, serviceDeck } from '../config/site.js';
+import ServiceCard from '../components/sections/ServiceCard.jsx';
 import {
   ArrowRight,
   Layers,
@@ -194,42 +194,15 @@ const HomeView = () => (
     </section>
 
     <OperationalRealityComparison />
-    <section className="w-full px-6 md:px-12 lg:px-24 py-24 bg-[#FFF2DF]">
-      <div className="w-full flex flex-col items-center mb-16 text-center max-w-3xl mx-auto">
-        <RevealOnScroll
-          as="h2"
-          direction="up"
-          className="text-3xl md:text-5xl font-extrabold tracking-tight text-[#3E2522] mb-6"
-        >
-          Practical Support for Everyday Operations.
-        </RevealOnScroll>
+    <section className="service-deck" aria-labelledby="home-services-title">
+      <div className="service-deck__heading">
+        <p className="service-deck__eyebrow">{serviceDeck.eyebrow}</p>
+        <h2 id="home-services-title">{serviceDeck.title}</h2>
+        <p>{serviceDeck.intro}</p>
       </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-7xl mx-auto">
-        {services.map((service, i) => (
-          <RevealOnScroll key={i} direction="up" delay={150 * i} className="h-full">
-            <Link
-              to={`/services#${service.id}`}
-              className="group bg-white border border-[#8C6E63]/10 rounded-xl p-10 flex flex-col justify-between hover:shadow-xl hover:border-[#D3A376]/50 hover:-translate-y-2 transition-all duration-500 cursor-pointer h-full"
-            >
-              <div>
-                <div className="w-14 h-14 bg-[#FFE0B2]/30 border border-[#D3A376]/30 rounded-lg flex items-center justify-center mb-8 text-[#3E2522] group-hover:bg-[#D3A376] group-hover:text-white group-hover:scale-110 transition-all duration-500">
-                  <ServiceIcon serviceId={service.id} size={26} />
-                </div>
-                <h3 className="text-2xl font-bold mb-4 text-[#3E2522]">{service.name}</h3>
-                <p className="text-[#3E2522]/70 leading-relaxed font-medium mb-8">
-                  {service.description}
-                </p>
-              </div>
-              <span className="font-bold text-[#8C6E63] group-hover:text-[#D3A376] flex items-center gap-2 transition-colors duration-300 w-fit uppercase text-xs tracking-wider">
-                View Deliverables{' '}
-                <ArrowRight
-                  size={16}
-                  className="group-hover:translate-x-2 transition-transform duration-300"
-                />
-              </span>
-            </Link>
-          </RevealOnScroll>
+      <div className="service-deck__grid">
+        {services.map((service) => (
+          <ServiceCard key={service.id} service={service} preview />
         ))}
       </div>
     </section>
