@@ -8,9 +8,10 @@ import { routes } from '../src/config/routes.js';
 
 const tick = () => new Promise((resolve) => setTimeout(resolve, 80));
 async function mount(path = '/', { noMarkup = false, reducedMotion = true } = {}) {
-  const route = routes.find((item) => item.path === path);
+  const pathname = new URL(path, site.url).pathname;
+  const route = routes.find((item) => item.path === pathname);
   let html = await readFile(
-    `dist/${path === '/' ? 'index' : route ? path.slice(1) : '404'}.html`,
+    `dist/${pathname === '/' ? 'index' : route ? pathname.slice(1) : '404'}.html`,
     'utf8',
   );
   if (noMarkup)
@@ -183,6 +184,12 @@ test('all service details remain in both pre-rendered documents', async () => {
       services.forEach((service, index) => {
         const card = cards[index];
         assert.ok(card.textContent.includes(service.summary));
+        assert.equal(
+          card.querySelector('.command-card__summary').textContent,
+          service.shortSummary,
+        );
+        assert.equal(card.querySelectorAll('.command-card__action svg').length, 1);
+        assert.ok(!card.textContent.includes('↗'));
         assert.equal(card.querySelectorAll('.command-card__tasks li').length, 4);
         service.tasks.forEach(({ title, description }) => {
           assert.ok(card.textContent.includes(title));
@@ -269,3 +276,25 @@ for (const path of ['/', '/services']) {
     }
   });
 }
+
+test('contact query pre-selection is hydration-safe and preserves manual choices', async () => {
+  for (const id of [...services.map(({ id }) => id), 'unknown', '']) {
+    const { dom, doc, errors } = await mount(`/contact?service=${id}`);
+    try {
+      const select = doc.querySelector('[name="service_needed"]');
+      assert.equal(select.value, services.some((service) => service.id === id) ? id : '');
+      select.value = services[3].id;
+      select.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+      await tick();
+      assert.equal(select.value, services[3].id);
+      const nextId = id === services[1].id ? services[0].id : services[1].id;
+      dom.window.history.pushState(null, '', `/contact?service=${nextId}`);
+      dom.window.dispatchEvent(new dom.window.PopStateEvent('popstate'));
+      await tick();
+      assert.equal(select.value, nextId);
+      assert.deepEqual(errors, []);
+    } finally {
+      dom.window.close();
+    }
+  }
+});

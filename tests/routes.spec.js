@@ -86,12 +86,12 @@ test('mobile menu, WhatsApp and reduced motion', async ({ page }) => {
   await expect(page.locator('canvas')).toHaveCount(0);
 });
 
-async function fillForm(page) {
+async function fillForm(page, selectService = true) {
   await page.getByLabel('Name *', { exact: true }).fill('Test Visitor');
   await page.getByLabel('Business Email').fill('test@example.com');
   await page.getByLabel('Company Name').fill('Test Company');
   await page.getByLabel('Direct Phone').fill('+15555550100');
-  await page.getByLabel('Services Needed').selectOption('security-dispatching');
+  if (selectService) await page.getByLabel('Services Needed').selectOption('security-dispatching');
   await page.getByLabel('Coverage Window *', { exact: true }).selectOption('after-hours');
   await page.getByLabel('Main Operational Challenge').fill('Test of the inquiry workflow.');
 }
@@ -184,12 +184,12 @@ for (const service of services) {
     await expect(page).toHaveURL(`/contact?service=${service.id}`);
     await expect(dialog).toHaveCount(0);
     expect(await page.evaluate(() => document.body.style.overflow)).not.toBe('hidden');
-    await fillForm(page);
+    await expect(page.getByLabel('Services Needed')).toHaveValue(service.id);
+    await fillForm(page, false);
     await expect(page.locator('select[name="service_needed"] option')).toHaveText([
       'Choose one of our four services...',
       ...services.map((item) => item.name),
     ]);
-    await page.getByLabel('Services Needed').selectOption({ label: service.name });
     await page.locator('button[type="submit"]').click();
     await expect(page.getByRole('status')).toHaveText('Inquiry Received');
     expect(payload).toContain(service.id);
@@ -236,7 +236,7 @@ for (const size of [
             return { x: rect.x, y: rect.y, height: rect.height, width: rect.width };
           }),
         );
-        expect(bounds.every(({ height }) => height === 360)).toBe(true);
+        expect(bounds.every(({ height }) => height === 440)).toBe(true);
         expect(bounds[0].y).toBe(bounds[1].y);
         expect(bounds[2].y).toBe(bounds[3].y);
         expect(bounds[0].x).toBe(bounds[2].x);
@@ -244,9 +244,35 @@ for (const size of [
       }
       const trigger = cards.first().getByRole('button');
       await expect(trigger.locator('.command-card__platform-preview li')).toHaveCount(4);
-      expect(
-        await trigger.locator('.command-card__summary').evaluate((el) => el.clientHeight),
-      ).toBeLessThanOrEqual(44);
+      for (const [index, service] of services.entries()) {
+        const card = cards.nth(index);
+        await expect(card.locator('.command-card__summary')).toHaveText(service.shortSummary);
+        await expect(card.locator('.command-card__action svg')).toHaveCount(1);
+        const layout = await card.evaluate((el) => {
+          const elements = [
+            ...el.querySelectorAll(
+              '.command-card__trigger h2, .command-card__trigger h3, .command-card__tagline, .command-card__summary, .command-card__platform-preview li, .command-card__action',
+            ),
+          ];
+          const trigger = el.querySelector('.command-card__trigger');
+          return {
+            fits: elements.every(
+              (item) =>
+                item.scrollWidth <= item.clientWidth + 1 &&
+                item.scrollHeight <= item.clientHeight + 1 &&
+                item.getBoundingClientRect().bottom <= trigger.getBoundingClientRect().bottom + 1,
+            ),
+            clamp: getComputedStyle(el.querySelector('.command-card__summary')).webkitLineClamp,
+            font: getComputedStyle(el.querySelector('.command-card__pill')).fontFamily,
+            title: getComputedStyle(el.querySelector('h2, h3')).color,
+          };
+        });
+        expect(layout.fits).toBe(true);
+        expect(layout.clamp).toBe('none');
+        expect(layout.font).toContain('sans-serif');
+        expect(layout.title).toBe('rgb(255, 253, 249)');
+        expect(await card.textContent()).not.toContain('↗');
+      }
       await page
         .locator('.service-deck__grid')
         .screenshot({ path: test.info().outputPath('command-grid.png') });
@@ -259,6 +285,10 @@ for (const size of [
         dialog.getByRole('tabpanel').getByRole('heading', { name: services[0].title }),
       ).toBeVisible();
       await expect(dialog.getByRole('tabpanel').locator('.command-card__tasks li')).toHaveCount(4);
+      await dialog.screenshot({
+        path: test.info().outputPath('command-console.png'),
+        animations: 'disabled',
+      });
       await dialog.getByRole('button', { name: 'Next service' }).click();
       await expect(
         dialog.getByRole('tabpanel').getByRole('heading', { name: services[1].title }),
@@ -307,3 +337,44 @@ for (const size of [
     });
   }
 }
+
+test('contact query reloads, manual override, validation and reset retain expected selection', async ({
+  page,
+}) => {
+  const errors = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  page.on('console', (message) => {
+    if (message.type() === 'error') errors.push(message.text());
+  });
+  const select = page.getByLabel('Services Needed');
+  for (const service of services) {
+    await page.goto(`/contact?service=${service.id}`);
+    await expect(select).toHaveValue(service.id);
+    await page.reload();
+    await expect(select).toHaveValue(service.id);
+  }
+  for (const path of ['/contact?service=unknown', '/contact?service=', '/contact']) {
+    await page.goto(path);
+    await expect(select).toHaveValue('');
+  }
+  await page.goto(`/contact?service=${services[2].id}`);
+  await expect(select).toHaveValue(services[2].id);
+  await select.selectOption(services[1].id);
+  await fillForm(page, false);
+  await expect(select).toHaveValue(services[1].id);
+  let payload = '';
+  await page.route('https://api.web3forms.com/submit', async (route) => {
+    payload = route.request().postData();
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ success: true }),
+    });
+  });
+  await page.locator('button[type="submit"]').click();
+  await expect(page.getByRole('status')).toHaveText('Inquiry Received');
+  expect(payload).toContain(services[1].id);
+  await page.getByRole('button', { name: 'Send Another Note' }).click();
+  await expect(select).toHaveValue(services[2].id);
+  expect(errors).toEqual([]);
+});

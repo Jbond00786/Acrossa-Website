@@ -4,6 +4,8 @@ export const services = [
     code: 'OPS-01',
     title: 'Security Dispatching',
     tagline: '24/7 Live Guard Monitoring, Shift Control & Incident Response',
+    shortSummary:
+      'Live 24/7 guard tracking, rapid shift coverage, alarm response, and DAR auditing in your platforms.',
     summary:
       'We act as your live remote command center. Our dispatchers monitor your field officers in real time, fill open shifts fast, verify GPS patrols, and write clear incident reports directly inside your existing guard management platforms.',
     tasks: [
@@ -37,6 +39,8 @@ export const services = [
     code: 'OPS-02',
     title: 'Truck Dispatching',
     tagline: 'End-to-End Load Coordination, Route Tracking & Broker Communication',
+    shortSummary:
+      'Full-cycle load booking, rate negotiation, live ELD route tracking, and carrier billing prep.',
     summary:
       'We keep your trucks moving and your drivers focused on the road. Our dispatch team negotiates loads, tracks routes in real time, handles broker updates, and organizes all trip paperwork inside your transportation tools.',
     tasks: [
@@ -70,6 +74,8 @@ export const services = [
     code: 'OPS-03',
     title: 'Remote IT Support',
     tagline: 'Fast Helpdesk Triage, System Troubleshooting & User Administration',
+    shortSummary:
+      'Fast Tier 1–2 helpdesk triage, remote desktop fixes, user access control, and uptime monitoring.',
     summary:
       'We resolve technical issues before they slow down your team. Our specialists handle incoming support tickets, troubleshoot workstation and software issues remotely, and manage user accounts across your IT environment.',
     tasks: [
@@ -110,6 +116,8 @@ export const services = [
     code: 'OPS-04',
     title: 'Call Center & Customer Care',
     tagline: '24/7 Inbound Reception, Order Support & Multi-Channel Client Care',
+    shortSummary:
+      '24/7 live call answering, multi-channel chat and ticket resolution, booking, and CRM logging.',
     summary:
       'We make sure your customers never reach a voicemail. Our agents answer calls, reply to live chats and emails, book appointments, and log every interaction cleanly inside your CRM and phone systems.',
     tasks: [

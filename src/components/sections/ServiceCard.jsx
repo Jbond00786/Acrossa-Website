@@ -3,6 +3,24 @@ import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
 import { serviceDeck, services, site } from '../../config/site.js';
 
+function DiagonalArrow() {
+  return (
+    <svg
+      className="command-arrow"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path d="M6 18 18 6M6 6h12v12" />
+    </svg>
+  );
+}
+
 function Schematic({ id }) {
   return (
     <svg className="command-card__schematic" viewBox="0 0 100 64" fill="none" aria-hidden="true">
@@ -24,7 +42,7 @@ function Schematic({ id }) {
           <path d="M8 20h84M8 44h84M24 6v52M50 6v52M76 6v52" className="schematic-grid" />
           <path d="M12 48h22V18h30v24h24" stroke="currentColor" strokeWidth="1.5" />
           <circle className="schematic-route" cx="12" cy="48" r="3" fill="currentColor" />
-          <circle cx="12" cy="48" r="4" fill="#102521" stroke="currentColor" />
+          <circle cx="12" cy="48" r="4" fill="#1F120D" stroke="currentColor" />
           <path d="m84 37 5 5-5 5" stroke="currentColor" strokeWidth="2" />
         </>
       )}
@@ -226,7 +244,7 @@ function ServiceCard({ service, preview, onExpand }) {
           <p className="command-card__tagline" title={service.tagline}>
             {service.tagline}
           </p>
-          <p className="command-card__summary">{service.summary}</p>
+          <p className="command-card__summary">{service.shortSummary}</p>
           <ul className="command-card__platform-preview" aria-label="Featured platforms">
             {service.platforms.slice(0, 3).map((platform) => (
               <li key={platform} className="command-card__pill" title={platform}>
@@ -238,11 +256,15 @@ function ServiceCard({ service, preview, onExpand }) {
             </li>
           </ul>
           <span className="command-card__action">
-            Expand Command View <span aria-hidden="true">↗</span>
+            Expand Command View{' '}
+            <span className="command-card__arrow">
+              <DiagonalArrow />
+            </span>
           </span>
         </div>
       </a>
       <div className="sr-only">
+        <p>{service.summary}</p>
         <ServiceDetails service={service} />
       </div>
     </article>
@@ -410,7 +432,7 @@ function CommandConsole({ initialIndex, origin, onClose }) {
                     to={`/contact?service=${encodeURIComponent(item.id)}`}
                     onClick={onClose}
                   >
-                    Discuss This Service <span aria-hidden="true">↗</span>
+                    Discuss This Service <DiagonalArrow />
                   </Link>
                   <a
                     className="command-console__secondary"
@@ -418,7 +440,7 @@ function CommandConsole({ initialIndex, origin, onClose }) {
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Chat with us on WhatsApp ↗
+                    Chat with us on WhatsApp <DiagonalArrow />
                   </a>
                 </div>
                 <div className="command-console__details">

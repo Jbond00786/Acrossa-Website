@@ -1,11 +1,22 @@
 import { site, services, serviceList } from '../../config/site.js';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { CheckCircle2, Shield, AlertCircle } from 'lucide-react';
 
 const ContactForm = () => {
+  const [searchParams] = useSearchParams();
+  const serviceSelect = useRef(null);
+  const requestedService = searchParams.get('service') || '';
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    if (!serviceSelect.current) return;
+    serviceSelect.current.value = services.some(({ id }) => id === requestedService)
+      ? requestedService
+      : '';
+  }, [requestedService, isSubmitted]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -165,6 +176,8 @@ const ContactForm = () => {
               <select
                 id="contact-service_needed"
                 name="service_needed"
+                ref={serviceSelect}
+                defaultValue=""
                 required
                 className="w-full bg-[#FFF2DF]/30 border border-[#8C6E63]/20 rounded-lg px-3 py-2.5 text-sm text-[#3E2522] focus:outline-none focus:border-[#D3A376]"
               >
