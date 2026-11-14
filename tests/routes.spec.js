@@ -293,6 +293,12 @@ for (const size of [
           };
         });
         expect(layout.fits).toBe(true);
+        expect(
+          await card
+            .locator('.command-card__platform-preview li')
+            .first()
+            .evaluate((el) => el.clientHeight),
+        ).toBeLessThanOrEqual(32);
         expect(layout.clamp).toBe('none');
         expect(layout.font).toContain('sans-serif');
         expect(layout.title).toBe('rgb(255, 253, 249)');
