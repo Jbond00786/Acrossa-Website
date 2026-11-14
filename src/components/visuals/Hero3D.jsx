@@ -8,7 +8,7 @@ const Hero3D = () => {
     const container = mountRef.current;
     if (!container) return;
 
-    container.innerHTML = '';
+    container.replaceChildren();
 
     const scene = new THREE.Scene();
     scene.fog = new THREE.Fog(0x3e2522, 6, 32);
@@ -147,7 +147,7 @@ const Hero3D = () => {
       targetX = x * 0.3;
       targetY = y * 0.3;
     };
-    container.addEventListener('mousemove', onMouseMove);
+    container.addEventListener('mousemove', onMouseMove, { passive: true });
 
     let animationFrameId;
     let isRendering = false;
@@ -191,6 +191,7 @@ const Hero3D = () => {
       if (!container) return;
       const width = container.clientWidth;
       const height = container.clientHeight;
+      if (!width || !height) return;
       camera.aspect = width / height;
       camera.updateProjectionMatrix();
       renderer.setSize(width, height);
@@ -203,7 +204,8 @@ const Hero3D = () => {
         networkGroup.scale.setScalar(1.2);
       }
     };
-    window.addEventListener('resize', handleResize);
+    const resizeObserver = new ResizeObserver(handleResize);
+    resizeObserver.observe(container);
 
     const syncRendering = () => {
       const shouldRender = inView && !document.hidden && !motion.matches;
@@ -227,7 +229,7 @@ const Hero3D = () => {
       observer.disconnect();
       document.removeEventListener('visibilitychange', syncRendering);
       motion.removeEventListener('change', syncRendering);
-      window.removeEventListener('resize', handleResize);
+      resizeObserver.disconnect();
       container.removeEventListener('mousemove', onMouseMove);
       cancelAnimationFrame(animationFrameId);
 

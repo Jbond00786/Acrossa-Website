@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
+import useDialogLifecycle from '../../hooks/useDialogLifecycle.js';
 import { serviceDeck, services, site } from '../../config/site.js';
 
 function DiagonalArrow() {
@@ -132,8 +133,6 @@ function ServiceDetails({ service }) {
 
 function ServiceCard({ service, preview, onExpand }) {
   const cardRef = useRef(null);
-  const frame = useRef(0);
-  const interactive = useRef(false);
   const headingId = `${preview ? 'preview-' : ''}${service.id}-title`;
 
   useEffect(() => {
@@ -141,15 +140,33 @@ function ServiceCard({ service, preview, onExpand }) {
     const media = window.matchMedia(
       '(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)',
     );
-    const reset = () => {
-      interactive.current = media.matches;
-      cancelAnimationFrame(frame.current);
-      frame.current = 0;
+    const maxTilt = 2.5;
+    let frame = 0;
+    let pointer;
+    let visible = false;
+    function resetPointer() {
+      cancelAnimationFrame(frame);
+      frame = 0;
       card.removeAttribute('data-tracking');
       card.style.removeProperty('--tilt-x');
       card.style.removeProperty('--tilt-y');
-    };
-    let visible = false;
+    }
+    function trackPointer(event) {
+      if (!media.matches || event.pointerType !== 'mouse') return;
+      pointer = { x: event.clientX, y: event.clientY };
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        const rect = card.getBoundingClientRect();
+        const x = Math.max(0, Math.min(1, (pointer.x - rect.left) / rect.width));
+        const y = Math.max(0, Math.min(1, (pointer.y - rect.top) / rect.height));
+        card.style.setProperty('--mouse-x', `${x * rect.width}px`);
+        card.style.setProperty('--mouse-y', `${y * rect.height}px`);
+        card.style.setProperty('--tilt-x', `${(0.5 - y) * maxTilt * 2}deg`);
+        card.style.setProperty('--tilt-y', `${(x - 0.5) * maxTilt * 2}deg`);
+        card.dataset.tracking = 'true';
+      });
+    }
     const syncVisibility = () => {
       card.dataset.visible = String(visible && !document.hidden);
     };
@@ -163,44 +180,22 @@ function ServiceCard({ service, preview, onExpand }) {
             { threshold: 0.05 },
           )
         : null;
-    reset();
     observer?.observe(card);
-    media.addEventListener('change', reset);
+    card.addEventListener('pointermove', trackPointer, { passive: true });
+    for (const event of ['pointerleave', 'pointercancel', 'click'])
+      card.addEventListener(event, resetPointer, { passive: true });
+    media.addEventListener('change', resetPointer);
     document.addEventListener('visibilitychange', syncVisibility);
     return () => {
-      cancelAnimationFrame(frame.current);
+      resetPointer();
       observer?.disconnect();
-      media.removeEventListener('change', reset);
+      card.removeEventListener('pointermove', trackPointer);
+      for (const event of ['pointerleave', 'pointercancel', 'click'])
+        card.removeEventListener(event, resetPointer);
+      media.removeEventListener('change', resetPointer);
       document.removeEventListener('visibilitychange', syncVisibility);
     };
   }, []);
-
-  function trackPointer(event) {
-    if (!interactive.current || event.pointerType !== 'mouse') return;
-    const { clientX, clientY } = event;
-    cancelAnimationFrame(frame.current);
-    frame.current = requestAnimationFrame(() => {
-      const card = cardRef.current;
-      const rect = card.getBoundingClientRect();
-      const x = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
-      const y = Math.max(0, Math.min(1, (clientY - rect.top) / rect.height));
-      card.style.setProperty('--mouse-x', `${x * 100}%`);
-      card.style.setProperty('--mouse-y', `${y * 100}%`);
-      card.style.setProperty('--tilt-x', `${(0.5 - y) * 5}deg`);
-      card.style.setProperty('--tilt-y', `${(x - 0.5) * 5}deg`);
-      card.dataset.tracking = 'true';
-      frame.current = 0;
-    });
-  }
-
-  function resetPointer() {
-    cancelAnimationFrame(frame.current);
-    frame.current = 0;
-    const card = cardRef.current;
-    card.removeAttribute('data-tracking');
-    card.style.removeProperty('--tilt-x');
-    card.style.removeProperty('--tilt-y');
-  }
 
   return (
     <article
@@ -208,9 +203,6 @@ function ServiceCard({ service, preview, onExpand }) {
       id={preview ? undefined : service.id}
       className="command-card"
       aria-labelledby={headingId}
-      onPointerMove={trackPointer}
-      onPointerLeave={resetPointer}
-      onPointerCancel={resetPointer}
     >
       <a
         className="command-card__trigger"
@@ -220,7 +212,6 @@ function ServiceCard({ service, preview, onExpand }) {
         aria-label={`Expand Command View: ${service.title}`}
         onClick={(event) => {
           event.preventDefault();
-          resetPointer();
           onExpand(event.currentTarget);
         }}
         onKeyDown={(event) => {
@@ -246,13 +237,14 @@ function ServiceCard({ service, preview, onExpand }) {
           </p>
           <p className="command-card__summary">{service.shortSummary}</p>
           <ul className="command-card__platform-preview" aria-label="Featured platforms">
-            {service.platforms.slice(0, 3).map((platform) => (
+            {service.platforms.slice(0, serviceDeck.compactPlatformCount).map((platform) => (
               <li key={platform} className="command-card__pill" title={platform}>
                 {platform}
               </li>
             ))}
             <li className="command-card__pill command-card__pill--existing">
-              +{service.platforms.length - 3} more &amp; Your Existing Platform
+              +{service.platforms.length - serviceDeck.compactPlatformCount} more &amp; Your
+              Existing Platform
             </li>
           </ul>
           <span className="command-card__action">
@@ -279,21 +271,7 @@ function CommandConsole({ initialIndex, origin, onClose }) {
   const tabsRef = useRef([]);
   const service = services[selection.index];
 
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    const { overflow, paddingRight } = document.body.style;
-    const gutter = window.innerWidth - document.documentElement.clientWidth;
-    document.body.style.overflow = 'hidden';
-    if (gutter > 0) document.body.style.paddingRight = `${gutter}px`;
-    dialog.showModal();
-    closeRef.current.focus({ preventScroll: true });
-    return () => {
-      dialog.close();
-      document.body.style.overflow = overflow;
-      document.body.style.paddingRight = paddingRight;
-      origin?.focus({ preventScroll: true });
-    };
-  }, [origin]);
+  useDialogLifecycle(dialogRef, closeRef, origin);
 
   useEffect(() => {
     if (!closing) return;

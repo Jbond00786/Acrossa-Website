@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Logo from './Logo.jsx';
 import PolicyModal from './PolicyModal.jsx';
+import { routes } from '../../config/routes.js';
 import { site } from '../../config/site.js';
 
 export default function Footer() {
@@ -30,26 +31,15 @@ export default function Footer() {
               Navigation
             </h4>
             <ul className="space-y-2 text-xs opacity-80 font-medium">
-              <li>
-                <Link to="/" className="hover:text-[#D3A376] transition-colors">
-                  Home
-                </Link>
-              </li>
-              <li>
-                <Link to="/services" className="hover:text-[#D3A376] transition-colors">
-                  Services
-                </Link>
-              </li>
-              <li>
-                <Link to="/how-we-work" className="hover:text-[#D3A376] transition-colors">
-                  How We Work
-                </Link>
-              </li>
-              <li>
-                <Link to="/about" className="hover:text-[#D3A376] transition-colors">
-                  About {site.name}
-                </Link>
-              </li>
+              {routes
+                .filter(({ path }) => path !== '/contact')
+                .map((route) => (
+                  <li key={route.path}>
+                    <Link to={route.path} className="hover:text-[#D3A376] transition-colors">
+                      {route.path === '/about' ? `About ${site.name}` : route.label}
+                    </Link>
+                  </li>
+                ))}
             </ul>
           </div>
           <div>

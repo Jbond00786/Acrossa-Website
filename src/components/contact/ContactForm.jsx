@@ -1,4 +1,4 @@
-import { site, services, serviceList } from '../../config/site.js';
+import { site, services, serviceList, contactFormConfig } from '../../config/site.js';
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { CheckCircle2, Shield, AlertCircle } from 'lucide-react';
@@ -6,6 +6,7 @@ import { CheckCircle2, Shield, AlertCircle } from 'lucide-react';
 const ContactForm = () => {
   const [searchParams] = useSearchParams();
   const serviceSelect = useRef(null);
+  const pendingRequest = useRef(null);
   const requestedService = searchParams.get('service') || '';
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -18,37 +19,54 @@ const ContactForm = () => {
       : '';
   }, [requestedService, isSubmitted]);
 
+  useEffect(() => () => pendingRequest.current?.abort(), []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (isSubmitting) return;
+    if (pendingRequest.current) return;
+    const form = e.currentTarget;
+    if (form.elements.botcheck.checked) return;
+    for (const [name, limit] of Object.entries(contactFormConfig.limits)) {
+      const input = form.elements[name];
+      input.value = input.value.trim();
+      input.setCustomValidity(
+        input.value.length > limit ? `Please use no more than ${limit} characters.` : '',
+      );
+    }
+    if (!form.reportValidity()) return;
+    if (!services.some(({ id }) => id === form.elements.service_needed.value)) return;
+    const request = new AbortController();
+    pendingRequest.current = request;
     setIsSubmitting(true);
     setErrorMessage('');
 
-    const formData = new FormData(e.target);
-    const web3FormsKey =
-      import.meta.env?.VITE_WEB3FORMS_KEY || 'f02e1205-164f-4bd7-af41-abac17113875';
+    const formData = new FormData(form);
+    const web3FormsKey = import.meta.env?.VITE_WEB3FORMS_KEY || contactFormConfig.publicAccessKey;
     formData.append('access_key', web3FormsKey);
     formData.append('subject', `New Inquiry from ${site.name} Website`);
 
     try {
-      const response = await fetch('https://api.web3forms.com/submit', {
+      const response = await fetch(contactFormConfig.endpoint, {
+        signal: request.signal,
         method: 'POST',
         body: formData,
       });
       const data = await response.json();
-      if (response.ok && data.success) {
-        setIsSubmitting(false);
+      if (request.signal.aborted) return;
+      if (response.ok && data?.success === true) {
         setIsSubmitted(true);
       } else {
-        setIsSubmitting(false);
         setErrorMessage(
-          data.message ||
+          (typeof data?.message === 'string' && data.message) ||
             `Failed to submit inquiry. Please email us directly at ${site.emails[0]}.`,
         );
       }
     } catch {
-      setIsSubmitting(false);
+      if (request.signal.aborted) return;
       setErrorMessage(`Network error connecting to form service. Please email ${site.emails[0]}.`);
+    } finally {
+      if (pendingRequest.current === request) pendingRequest.current = null;
+      if (!request.signal.aborted) setIsSubmitting(false);
     }
   };
 
@@ -103,6 +121,8 @@ const ContactForm = () => {
                 id="contact-name"
                 type="text"
                 name="name"
+                maxLength={contactFormConfig.limits.name}
+                onInput={(event) => event.currentTarget.setCustomValidity('')}
                 autoComplete="name"
                 required
                 className="w-full bg-[#FFF2DF]/30 border border-[#8C6E63]/20 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#D3A376]"
@@ -120,6 +140,8 @@ const ContactForm = () => {
                 id="contact-email"
                 type="email"
                 name="email"
+                maxLength={contactFormConfig.limits.email}
+                onInput={(event) => event.currentTarget.setCustomValidity('')}
                 autoComplete="email"
                 required
                 className="w-full bg-[#FFF2DF]/30 border border-[#8C6E63]/20 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#D3A376]"
@@ -140,6 +162,8 @@ const ContactForm = () => {
                 id="contact-company"
                 type="text"
                 name="company"
+                maxLength={contactFormConfig.limits.company}
+                onInput={(event) => event.currentTarget.setCustomValidity('')}
                 autoComplete="organization"
                 required
                 className="w-full bg-[#FFF2DF]/30 border border-[#8C6E63]/20 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#D3A376]"
@@ -157,6 +181,8 @@ const ContactForm = () => {
                 id="contact-phone"
                 type="tel"
                 name="phone"
+                maxLength={contactFormConfig.limits.phone}
+                onInput={(event) => event.currentTarget.setCustomValidity('')}
                 autoComplete="tel"
                 required
                 className="w-full bg-[#FFF2DF]/30 border border-[#8C6E63]/20 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#D3A376]"
@@ -222,6 +248,8 @@ const ContactForm = () => {
               id="contact-current_software"
               type="text"
               name="current_software"
+              maxLength={contactFormConfig.limits.current_software}
+              onInput={(event) => event.currentTarget.setCustomValidity('')}
               className="w-full bg-[#FFF2DF]/30 border border-[#8C6E63]/20 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#D3A376]"
               placeholder="e.g. TrackTik, Samsara, Microsoft 365, Zendesk"
             />
@@ -237,6 +265,8 @@ const ContactForm = () => {
             <textarea
               id="contact-message"
               name="message"
+              maxLength={contactFormConfig.limits.message}
+              onInput={(event) => event.currentTarget.setCustomValidity('')}
               required
               rows="3"
               className="w-full bg-[#FFF2DF]/30 border border-[#8C6E63]/20 rounded-lg px-3.5 py-2.5 text-sm focus:outline-none focus:border-[#D3A376] resize-none"

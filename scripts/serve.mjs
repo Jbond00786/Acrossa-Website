@@ -3,6 +3,8 @@
 import { createServer } from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
 import { resolve, extname } from 'node:path';
+const deployment = JSON.parse(await readFile('vercel.json', 'utf8'));
+const securityHeaders = deployment.headers.find(({ source }) => source === '/(.*)').headers;
 const root = resolve(process.env.SERVE_DIR || 'dist');
 const mime = {
   '.html': 'text/html; charset=utf-8',
@@ -17,6 +19,7 @@ const mime = {
   '.txt': 'text/plain',
 };
 createServer(async (req, res) => {
+  for (const { key, value } of securityHeaders) res.setHeader(key, value);
   try {
     const url = new URL(req.url, 'http://localhost');
     const pathname = decodeURIComponent(url.pathname);

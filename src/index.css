@@ -44,9 +44,11 @@ body {
 
 :root {
   color-scheme: light;
+  scrollbar-gutter: stable;
+  --header-offset: 110px;
 }
 [id] {
-  scroll-margin-top: 110px;
+  scroll-margin-top: var(--header-offset);
 }
 :focus-visible {
   outline: 3px solid #18705a;
@@ -212,7 +214,7 @@ body {
   border: 1px solid #c89a6b66;
   border-radius: 24px;
   box-shadow: 0 18px 40px -15px rgba(36, 21, 15, 0.22);
-  scroll-margin-top: 115px;
+  scroll-margin-top: var(--header-offset);
   min-height: 440px;
 }
 .command-card__trigger::before {
@@ -222,9 +224,9 @@ body {
   pointer-events: none;
   width: 600px;
   height: 600px;
-  left: var(--mouse-x);
-  top: var(--mouse-y);
-  transform: translate3d(-50%, -50%, 0);
+  left: 0;
+  top: 0;
+  transform: translate3d(calc(var(--mouse-x) - 50%), calc(var(--mouse-y) - 50%), 0);
   background: radial-gradient(circle, rgba(212, 163, 102, 0.14), transparent 65%);
   opacity: 0;
   transition: opacity 220ms ease;
@@ -339,7 +341,7 @@ body {
 }
 .command-card .command-card__tagline {
   margin: 6px 0 10px;
-  min-height: 40px;
+  min-height: 20px;
   line-height: 20px;
 }
 .command-card .command-card__summary {
@@ -485,13 +487,8 @@ body {
 .command-card__trigger:is(:hover, :focus-visible) .command-card__arrow {
   background: #dda96b;
 }
-@media (min-width: 800px) and (max-width: 1099px) {
-  .command-card {
-    min-height: 500px;
-  }
-}
 
-@media (min-width: 800px) {
+@media (min-width: 1000px) {
   .service-deck {
     padding-left: 48px;
     padding-right: 48px;
@@ -501,6 +498,20 @@ body {
   }
   .command-card {
     height: 440px;
+  }
+  .command-card .command-card__tagline {
+    white-space: nowrap;
+    font-size: 12px;
+    letter-spacing: 0;
+  }
+  .command-card__platform-preview {
+    flex-wrap: nowrap;
+  }
+  .command-card__platform-preview .command-card__pill {
+    white-space: nowrap;
+    padding-inline: 7px;
+    font-size: clamp(9px, 0.8vw, 11px);
+    letter-spacing: 0;
   }
 }
 @media (max-width: 420px) {
@@ -980,4 +991,16 @@ body {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.policy-dialog {
+  max-width: min(42rem, calc(100% - 32px));
+  padding: 0;
+  border: 0;
+  background: transparent;
+  overflow: visible;
+}
+.policy-dialog::backdrop {
+  background: #0009;
+  backdrop-filter: blur(8px);
 }

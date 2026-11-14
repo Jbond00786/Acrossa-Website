@@ -3,7 +3,7 @@ export const services = [
     id: 'security-dispatching',
     code: 'OPS-01',
     title: 'Security Dispatching',
-    tagline: '24/7 Live Guard Monitoring, Shift Control & Incident Response',
+    tagline: '24/7 Guard Tracking, Shift Coverage & Incident Response',
     shortSummary:
       'Live 24/7 guard tracking, rapid shift coverage, alarm response, and DAR auditing in your platforms.',
     summary:
@@ -38,7 +38,7 @@ export const services = [
     id: 'truck-dispatching',
     code: 'OPS-02',
     title: 'Truck Dispatching',
-    tagline: 'End-to-End Load Coordination, Route Tracking & Broker Communication',
+    tagline: 'Load Coordination, Live Route Tracking & Broker Dispatch',
     shortSummary:
       'Full-cycle load booking, rate negotiation, live ELD route tracking, and carrier billing prep.',
     summary:
@@ -73,7 +73,7 @@ export const services = [
     id: 'remote-it-support',
     code: 'OPS-03',
     title: 'Remote IT Support',
-    tagline: 'Fast Helpdesk Triage, System Troubleshooting & User Administration',
+    tagline: 'Helpdesk Triage, Remote Fixes & User Access',
     shortSummary:
       'Fast Tier 1–2 helpdesk triage, remote desktop fixes, user access control, and uptime monitoring.',
     summary:
@@ -115,7 +115,7 @@ export const services = [
     id: 'call-center-customer-care',
     code: 'OPS-04',
     title: 'Call Center & Customer Care',
-    tagline: '24/7 Inbound Reception, Order Support & Multi-Channel Client Care',
+    tagline: '24/7 Calls, Multi-Channel Care & Appointment Booking',
     shortSummary:
       '24/7 live call answering, multi-channel chat and ticket resolution, booking, and CRM logging.',
     summary:
@@ -154,6 +154,7 @@ export const services = [
 }));
 
 export const serviceDeck = {
+  compactPlatformCount: 2,
   eyebrow: 'Four services. One connected team.',
   title: 'Your live command deck.',
   intro:
@@ -189,3 +190,9 @@ export const site = {
   },
 };
 export const absoluteUrl = (path = '/') => new URL(path, `${site.url}/`).href;
+
+export const contactFormConfig = {
+  endpoint: 'https://api.web3forms.com/submit',
+  publicAccessKey: 'f02e1205-164f-4bd7-af41-abac17113875',
+  limits: { name: 120, email: 254, company: 180, phone: 60, current_software: 500, message: 5000 },
+};

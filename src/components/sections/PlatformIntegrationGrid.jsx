@@ -5,7 +5,6 @@ import RevealOnScroll from '../visuals/RevealOnScroll.jsx';
 
 const PlatformIntegrationGrid = () => {
   const [activeCategory, setActiveCategory] = useState('all');
-  const [hoveredPlatform, setHoveredPlatform] = useState(null);
 
   const platforms = [
     {
@@ -248,18 +247,9 @@ const PlatformIntegrationGrid = () => {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {filtered.map((plat, idx) => {
-            const isHovered = hoveredPlatform === plat.name;
             return (
               <RevealOnScroll key={plat.name} direction="up" delay={idx * 60}>
-                <div
-                  onMouseEnter={() => setHoveredPlatform(plat.name)}
-                  onMouseLeave={() => setHoveredPlatform(null)}
-                  className={`group relative bg-white rounded-2xl p-6 border transition-all duration-500 ease-out flex flex-col justify-between h-full cursor-default overflow-hidden ${
-                    isHovered
-                      ? 'border-[#D3A376] shadow-[0_20px_40px_-15px_rgba(211,163,118,0.45)] -translate-y-2'
-                      : 'border-[#8C6E63]/15 shadow-sm hover:border-[#D3A376]/60 hover:shadow-md'
-                  }`}
-                >
+                <div className="group relative bg-white rounded-2xl p-6 border border-[#8C6E63]/15 shadow-sm hover:border-[#D3A376] hover:shadow-[0_20px_40px_-15px_rgba(211,163,118,0.45)] motion-safe:hover:-translate-y-2 transition-[transform,box-shadow,border-color] duration-500 ease-out flex flex-col justify-between h-full cursor-default overflow-hidden">
                   <div
                     className={`absolute -top-12 -right-12 w-28 h-28 rounded-full blur-xl transition-all duration-700 pointer-events-none opacity-20 group-hover:opacity-40 bg-gradient-to-br ${plat.color}`}
                   ></div>

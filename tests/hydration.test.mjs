@@ -136,6 +136,10 @@ test('contact payload, pending, success, reset, error and retry use intercepted 
       .find((el) => el.textContent.includes('Send Another Note'))
       .click();
     await tick();
+    for (const [key, value] of new dom.window.FormData(form)) {
+      if (doc.querySelector('form').elements[key])
+        doc.querySelector('form').elements[key].value = value;
+    }
     dom.window.fetch = async () => ({
       ok: false,
       json: async () => ({ success: false, message: 'Please retry.' }),
@@ -197,7 +201,10 @@ test('all service details remain in both pre-rendered documents', async () => {
         });
         service.platforms.forEach((platform) => assert.ok(card.textContent.includes(platform)));
         assert.ok(card.textContent.includes(service.platformNote));
-        assert.equal(card.querySelectorAll('.command-card__platform-preview li').length, 4);
+        assert.equal(
+          card.querySelectorAll('.command-card__platform-preview li').length,
+          serviceDeck.compactPlatformCount + 1,
+        );
       });
       assert.equal(dom.window.document.querySelectorAll('dialog').length, 0);
     } finally {
@@ -293,6 +300,84 @@ test('contact query pre-selection is hydration-safe and preserves manual choices
       await tick();
       assert.equal(select.value, nextId);
       assert.deepEqual(errors, []);
+    } finally {
+      dom.window.close();
+    }
+  }
+});
+
+test('honeypot, trimmed required fields, length validation and duplicate submit guards', async () => {
+  const { dom, doc, errors } = await mount('/contact');
+  try {
+    let calls = 0;
+    let payload;
+    dom.window.fetch = async (_url, options) => {
+      calls++;
+      payload = options.body;
+      return new Promise(() => {});
+    };
+    const form = doc.querySelector('form');
+    const submit = () =>
+      form.dispatchEvent(new dom.window.Event('submit', { bubbles: true, cancelable: true }));
+    const values = {
+      name: '  Test Visitor  ',
+      email: 'test@example.com',
+      company: 'Test Co',
+      phone: '5550100',
+      service_needed: services[0].id,
+      coverage_window: 'after-hours',
+      message: 'Test only',
+    };
+    Object.entries(values).forEach(([key, value]) => {
+      form.elements[key].value = value;
+    });
+    form.elements.botcheck.checked = true;
+    submit();
+    await tick();
+    assert.equal(calls, 0);
+    form.elements.botcheck.checked = false;
+    form.elements.name.value = '   ';
+    submit();
+    await tick();
+    assert.equal(calls, 0);
+    form.elements.name.value = 'x'.repeat(121);
+    submit();
+    await tick();
+    assert.equal(calls, 0);
+    form.elements.name.value = values.name;
+    submit();
+    submit();
+    await tick();
+    assert.equal(calls, 1);
+    assert.equal(payload.get('name'), 'Test Visitor');
+    assert.deepEqual(errors, []);
+  } finally {
+    dom.window.close();
+  }
+});
+
+test('JSON-LD escapes script delimiters and security headers are configured', async () => {
+  const { serializeJson, escapeHtml } = await import('../src/config/metadata.js');
+  const input = { name: '</script><script>alert(1)</script>' };
+  assert.equal(serializeJson(input).includes('<'), false);
+  assert.deepEqual(JSON.parse(serializeJson(input)), input);
+  assert.equal(escapeHtml('<img onerror="alert(1)">').includes('<'), false);
+  const config = JSON.parse(await readFile('vercel.json', 'utf8'));
+  const headers = Object.fromEntries(
+    config.headers
+      .find(({ source }) => source === '/(.*)')
+      .headers.map(({ key, value }) => [key, value]),
+  );
+  assert.equal(headers['X-Content-Type-Options'], 'nosniff');
+  assert.equal(headers['Referrer-Policy'], 'strict-origin-when-cross-origin');
+  assert.equal(headers['X-Frame-Options'], 'DENY');
+  for (const path of routes.map(({ path }) => path)) {
+    const { dom, doc } = await mount(path);
+    try {
+      for (const link of doc.querySelectorAll('a[target="_blank"]')) {
+        assert.ok(link.relList.contains('noopener'));
+        assert.ok(link.relList.contains('noreferrer'));
+      }
     } finally {
       dom.window.close();
     }

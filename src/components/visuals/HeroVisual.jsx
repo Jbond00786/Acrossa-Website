@@ -9,11 +9,18 @@ export default function HeroVisual() {
     if (media.matches || window.innerWidth < 768 || navigator.connection?.saveData) return;
     let cancelled = false;
     const timer = setTimeout(() => {
-      if (document.hidden || !ref.current || ref.current.getBoundingClientRect().bottom <= 0)
+      if (
+        media.matches ||
+        window.innerWidth < 768 ||
+        document.hidden ||
+        !ref.current ||
+        ref.current.getBoundingClientRect().bottom <= 0
+      )
         return;
       import('./Hero3D.jsx')
         .then((module) => {
-          if (!cancelled) setScene(() => module.default);
+          if (!cancelled && !media.matches && window.innerWidth >= 768)
+            setScene(() => module.default);
         })
         .catch(() => {
           /* Keep the static visual on load failure. */

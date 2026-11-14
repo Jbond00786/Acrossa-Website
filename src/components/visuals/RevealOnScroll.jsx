@@ -20,6 +20,14 @@ export default function RevealOnScroll({
     )
       return;
     if (element.getBoundingClientRect().top < window.innerHeight) return;
+    let animation;
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const stopMotion = () => {
+      if (motion.matches) {
+        animation?.cancel();
+        observer.disconnect();
+      }
+    };
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (!entry.isIntersecting) return;
@@ -31,7 +39,7 @@ export default function RevealOnScroll({
               : direction === 'none'
                 ? 'none'
                 : 'translateY(20px)';
-        element.animate(
+        animation = element.animate(
           [
             {
               opacity: 0.65,
@@ -46,7 +54,12 @@ export default function RevealOnScroll({
       { threshold: 0.05 },
     );
     observer.observe(element);
-    return () => observer.disconnect();
+    motion.addEventListener('change', stopMotion);
+    return () => {
+      observer.disconnect();
+      animation?.cancel();
+      motion.removeEventListener('change', stopMotion);
+    };
   }, [delay, direction, scale]);
   return (
     <Component ref={ref} className={className} {...props}>

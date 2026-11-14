@@ -64,3 +64,18 @@ The supplied Playwright tests run in GitHub Actions. Review the latest results a
 - A deliberate real inquiry reaches the expected mailbox; automated tests never send actual inquiries.
 
 Nothing should be merged into `main` until reviewed, because that branch automatically deploys the public domain.
+
+## Final pre-merge audit — November 13, 2026
+
+- Shortened the four taglines (truck wording exactly as requested) and centralized the compact platform count at two. Desktop cards use a single tagline line and a single pill row; full platform lists remain in static HTML and the console.
+- Removed redundant hover React state and unused scaffold image/SVG assets. Header/footer navigation now derive from the route catalog.
+- Card pointer events use passive listeners, one scheduled animation frame and refs, with transform-based spotlight positioning. Animation frames, listeners, observers and WebGL resources are cleaned up. Reduced-motion changes cancel reveal animations and suppress deferred Three.js startup.
+- Shared native-dialog lifecycle locks scrolling, preserves stable scrollbar space, restores previous styles and focus; policy dialogs now support Escape and modal semantics. The header's measured height supplies anchor offsets.
+- Hardened the existing Web3Forms client: trim text, enforce field limits and validity, reject filled honeypots, prevent same-frame duplicate requests, abort on unmount, and retain service pre-selection/manual overrides. The Web3Forms access key is intentionally public, not a secret; provider-side abuse protection remains necessary. See https://docs.web3forms.com/getting-started/faq.
+- Added nosniff, strict-origin-when-cross-origin, and DENY response headers to Vercel; the local production-file server reads the same configuration.
+- Confirmed JSON-LD escapes less-than characters, generated head attributes are escaped, no dangerouslySetInnerHTML/eval exists, all new-tab links include noopener/noreferrer, and no common private-key/token patterns were found in tracked source. This is a source/dependency audit, not a penetration test.
+- npm audit originally reported five advisories (four moderate and one high) in development tooling. Compatible lockfile updates resolve all five; the follow-up audit reports zero vulnerabilities.
+- Local lint/build and all 21 DOM tests pass. The expanded Chromium suite verifies card alignment, scrolling, anchor offsets, modal width/focus stability, hover/reduced-motion cleanup, security headers, navigation and intercepted form workflows. The latest PR CI run is authoritative for browser results.
+- Current build: initial JS 379.03 kB / 115.21 kB gzip; deferred Three.js core 182.91 kB and scene/renderer 355.88 kB. Three.js remains off the mobile/reduced-motion critical path. Composited animations and bounded frame scheduling reduce work; this does not establish universal 60fps or field Core Web Vitals.
+
+The user authorized marking PR #11 ready and merging only after all checks pass, followed by production HTTP/status, HTML and security-header verification. Automated tests do not send real inquiry emails.

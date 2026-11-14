@@ -1,4 +1,4 @@
-import { services } from '../src/config/site.js';
+import { services, serviceDeck } from '../src/config/site.js';
 import { test, expect } from '@playwright/test';
 import { routes } from '../src/config/routes.js';
 
@@ -242,8 +242,33 @@ for (const size of [
         expect(bounds[0].x).toBe(bounds[2].x);
         expect(bounds[0].width).toBeLessThanOrEqual(500);
       }
+      if (size.name === 'desktop') {
+        const rows = await cards.evaluateAll((elements) =>
+          elements.map((el) => {
+            const tagline = el.querySelector('.command-card__tagline');
+            const summary = el.querySelector('.command-card__summary');
+            const pills = [...el.querySelectorAll('.command-card__platform-preview li')];
+            const top = el.getBoundingClientRect().top;
+            return {
+              tagline: tagline.getBoundingClientRect().top - top,
+              summary: summary.getBoundingClientRect().top - top,
+              pills: pills.map((pill) => pill.getBoundingClientRect().top - top),
+              singleLine: tagline.clientHeight === parseFloat(getComputedStyle(tagline).lineHeight),
+            };
+          }),
+        );
+        for (const row of rows) {
+          expect(row.singleLine).toBe(true);
+          expect(row.tagline).toBe(rows[0].tagline);
+          expect(row.summary).toBe(rows[0].summary);
+          expect(new Set(row.pills).size).toBe(1);
+          expect(row.pills[0]).toBe(rows[0].pills[0]);
+        }
+      }
       const trigger = cards.first().getByRole('button');
-      await expect(trigger.locator('.command-card__platform-preview li')).toHaveCount(4);
+      await expect(trigger.locator('.command-card__platform-preview li')).toHaveCount(
+        serviceDeck.compactPlatformCount + 1,
+      );
       for (const [index, service] of services.entries()) {
         const card = cards.nth(index);
         await expect(card.locator('.command-card__summary')).toHaveText(service.shortSummary);
@@ -377,4 +402,58 @@ test('contact query reloads, manual override, validation and reset retain expect
   await page.getByRole('button', { name: 'Send Another Note' }).click();
   await expect(select).toHaveValue(services[2].id);
   expect(errors).toEqual([]);
+});
+
+test('route scrolling, anchors, modal layout stability, policy focus and pointer cleanup', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 1440, height: 960 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/services#security-dispatching');
+  const card = page.locator('#security-dispatching');
+  await expect
+    .poll(() =>
+      card.evaluate(
+        (el) =>
+          el.getBoundingClientRect().top >=
+          document.querySelector('nav').getBoundingClientRect().bottom,
+      ),
+    )
+    .toBe(true);
+  const before = await page.locator('nav').boundingBox();
+  const scrollBefore = await page.evaluate(() => scrollY);
+  await card.getByRole('button').click();
+  const after = await page.locator('nav').boundingBox();
+  expect(after.x).toBe(before.x);
+  expect(after.width).toBe(before.width);
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  expect(await page.evaluate(() => scrollY)).toBe(scrollBefore);
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await card.hover();
+  await expect(card).toHaveAttribute('data-tracking', 'true');
+  expect(
+    await card.evaluate((el) => Math.abs(parseFloat(el.style.getPropertyValue('--tilt-x'))) <= 2.5),
+  ).toBe(true);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(card).not.toHaveAttribute('data-tracking', 'true');
+  const privacy = page.getByRole('button', { name: 'Privacy Policy', exact: true });
+  await privacy.click();
+  await expect(page.getByRole('dialog', { name: 'Privacy Policy' })).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(page.getByRole('dialog')).toHaveCount(0);
+  await expect(privacy).toBeFocused();
+  await page.locator('footer').getByRole('link', { name: 'Inquiry Form' }).click();
+  await expect(page).toHaveURL(/\/contact$/);
+  await expect.poll(() => page.evaluate(() => scrollY)).toBe(0);
+});
+
+test('production-file server applies baseline security headers', async ({ request }) => {
+  for (const path of [...routes.map(({ path }) => path), '/sitemap.xml']) {
+    const response = await request.get(path);
+    expect(response.status()).toBe(200);
+    expect(response.headers()['x-content-type-options']).toBe('nosniff');
+    expect(response.headers()['referrer-policy']).toBe('strict-origin-when-cross-origin');
+    expect(response.headers()['x-frame-options']).toBe('DENY');
+  }
 });

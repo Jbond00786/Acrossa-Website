@@ -6,7 +6,7 @@ export const routes = [
     label: 'Home',
     title: `${site.name} | ${services[0].name} & Remote Services`,
     description: `${serviceList} from ${site.name}’s ${site.teamSize} member team, working in your existing platforms.`,
-    lastmod: '2026-11-11',
+    lastmod: '2026-11-13',
     priority: '1.0',
   },
   {
@@ -14,7 +14,7 @@ export const routes = [
     label: 'Services',
     title: `Security & Truck Dispatching, IT & Call Center | ${site.name}`,
     description: `Explore ${serviceList} for businesses across the US and Canada.`,
-    lastmod: '2026-11-11',
+    lastmod: '2026-11-13',
     priority: '0.9',
   },
   {
@@ -22,7 +22,7 @@ export const routes = [
     label: 'How We Work',
     title: `How Our Remote Services Work | ${site.name}`,
     description: `Plan coverage, platform access, and escalation for ${serviceList}.`,
-    lastmod: '2026-11-11',
+    lastmod: '2026-11-13',
     priority: '0.7',
   },
   {
@@ -30,7 +30,7 @@ export const routes = [
     label: 'About',
     title: `About ${site.name} | Your Remote Services Team`,
     description: `Founded in ${site.foundingDate}, ${site.name} provides ${serviceList} with a ${site.teamSize} member team.`,
-    lastmod: '2026-11-11',
+    lastmod: '2026-11-13',
     priority: '0.7',
   },
   {
@@ -38,7 +38,7 @@ export const routes = [
     label: 'Contact',
     title: `Contact ${site.name} | Discuss Your Service Needs`,
     description: `Contact ${site.name} by email, WhatsApp, or inquiry form for ${serviceList}.`,
-    lastmod: '2026-11-11',
+    lastmod: '2026-11-13',
     priority: '0.8',
   },
 ];
